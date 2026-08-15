@@ -100,7 +100,9 @@ export function EntryForm({
           value={occurredAt}
           onChange={(e) => setOccurredAt(e.target.value)}
           placeholder="dd/mm/yyyy - HH:MM"
-          inputMode="numeric"
+          autoCapitalize="off"
+          autoCorrect="off"
+          spellCheck={false}
         />
       </label>
 
