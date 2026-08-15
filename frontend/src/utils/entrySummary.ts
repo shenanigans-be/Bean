@@ -7,8 +7,11 @@ function capitalize(value: string): string {
 export function summarizeEntry(entry: Entry): string {
   const data = entry.data;
   switch (entry.type) {
-    case "diaper":
-      return capitalize(String(data.kind ?? ""));
+    case "diaper": {
+      const parts = [capitalize(String(data.kind ?? ""))];
+      if (data.notes) parts.push(String(data.notes));
+      return parts.join(" · ");
+    }
     case "bottle": {
       const parts = [capitalize(String(data.source ?? ""))];
       if (data.volume) parts.push(`${data.volume}ml`);

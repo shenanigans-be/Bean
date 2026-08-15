@@ -10,6 +10,7 @@ const DAYS_PER_PAGE = 2;
 interface LogProps {
   entries: Entry[];
   types: EntryType[];
+  recentEntryId: number | null;
   onSelect: (entry: Entry) => void;
 }
 
@@ -32,7 +33,7 @@ function groupByDay(entries: Entry[]): DayGroup[] {
   return groups;
 }
 
-export function Log({ entries, types, onSelect }: LogProps) {
+export function Log({ entries, types, recentEntryId, onSelect }: LogProps) {
   const [filterOpen, setFilterOpen] = useState(false);
   const [activeFilter, setActiveFilter] = useState<Set<EntryType>>(new Set());
   const [visibleDays, setVisibleDays] = useState(DAYS_PER_PAGE);
@@ -103,11 +104,12 @@ export function Log({ entries, types, onSelect }: LogProps) {
             <ul className="log-entries">
               {group.entries.map((entry) => {
                 const Icon = ENTRY_META[entry.type].icon;
+                const isRecent = entry.id === recentEntryId;
                 return (
                   <li key={entry.id}>
                     <button
                       type="button"
-                      className="log-entry"
+                      className={isRecent ? "log-entry log-entry-recent" : "log-entry"}
                       data-type={entry.type}
                       style={categoryVars(entry.type)}
                       onClick={() => onSelect(entry)}
@@ -115,6 +117,7 @@ export function Log({ entries, types, onSelect }: LogProps) {
                       <Icon className="log-entry-icon" size={20} />
                       <span className="log-entry-time">{timeOf(entry.occurredAt)}</span>
                       <span className="log-entry-summary">{summarizeEntry(entry)}</span>
+                      {isRecent && <span className="log-entry-badge">New</span>}
                     </button>
                   </li>
                 );

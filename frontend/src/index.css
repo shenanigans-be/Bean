@@ -516,6 +516,23 @@ body {
   color: var(--text);
 }
 
+.log-entry-recent {
+  outline: 2px solid var(--accent);
+  outline-offset: 1px;
+}
+
+.log-entry-badge {
+  flex-shrink: 0;
+  font-size: 0.7rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  color: var(--accent-text);
+  background: var(--accent);
+  padding: 0.15rem 0.45rem;
+  border-radius: 999px;
+}
+
 .load-more {
   display: block;
   width: 100%;

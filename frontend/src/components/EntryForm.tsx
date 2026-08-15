@@ -50,7 +50,7 @@ export function EntryForm({
   function buildData(): Record<string, unknown> {
     switch (type) {
       case "diaper":
-        return { kind };
+        return { kind, notes };
       case "bottle":
         return { source, volume: volume ? Number(volume) : null, notes };
       case "breast":
@@ -105,18 +105,24 @@ export function EntryForm({
       </label>
 
       {type === "diaper" && (
-        <label className="field">
-          <span>Kind</span>
-          <SegmentedControl
-            options={[
-              { value: "wet", label: "Wet" },
-              { value: "dirty", label: "Dirty" },
-              { value: "both", label: "Both" },
-            ]}
-            value={kind}
-            onChange={setKind}
-          />
-        </label>
+        <>
+          <label className="field">
+            <span>Kind</span>
+            <SegmentedControl
+              options={[
+                { value: "wet", label: "Wet" },
+                { value: "dirty", label: "Dirty" },
+                { value: "both", label: "Both" },
+              ]}
+              value={kind}
+              onChange={setKind}
+            />
+          </label>
+          <label className="field">
+            <span>Notes</span>
+            <input type="text" value={notes} onChange={(e) => setNotes(e.target.value)} />
+          </label>
+        </>
       )}
 
       {type === "bottle" && (

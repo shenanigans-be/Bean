@@ -16,6 +16,7 @@ export type BottleSource = "formula" | "pumped";
 
 export interface DiaperData {
   kind: DiaperKind;
+  notes: string;
 }
 
 export interface BottleData {

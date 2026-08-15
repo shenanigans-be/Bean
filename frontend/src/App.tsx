@@ -18,6 +18,7 @@ export default function App() {
   const [entries, setEntries] = useState<Entry[]>([]);
   const [settings, setSettings] = useState<AppSettings>(EMPTY_SETTINGS);
   const [activeType, setActiveType] = useState<EntryType | null>(null);
+  const [recentEntryId, setRecentEntryId] = useState<number | null>(null);
   const [editingEntry, setEditingEntry] = useState<Entry | null>(null);
   const [whoAmI, setWhoAmIState] = useState(getWhoAmI());
   const [theme, setThemeState] = useState<Theme>(getTheme());
@@ -50,7 +51,8 @@ export default function App() {
   }
 
   async function handleCreate(entry: NewEntry) {
-    await api.createEntry(entry);
+    const created = await api.createEntry(entry);
+    setRecentEntryId(created.id);
     setActiveType(null);
     await refreshEntries();
   }
@@ -149,7 +151,12 @@ export default function App() {
       {loading ? (
         <p className="log-empty">Loading…</p>
       ) : (
-        <Log entries={entries} types={visibleTypes} onSelect={setEditingEntry} />
+        <Log
+          entries={entries}
+          types={visibleTypes}
+          recentEntryId={recentEntryId}
+          onSelect={setEditingEntry}
+        />
       )}
 
       {settingsOpen && (
