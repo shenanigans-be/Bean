@@ -34,20 +34,24 @@ export interface BreastData {
 export interface PumpData {
   side: Side;
   volume: number | null;
+  notes: string;
 }
 
 export interface SolidsData {
   contents: string;
   weight: number | null;
+  notes: string;
 }
 
 export interface SleepData {
   duration: number | null;
+  notes: string;
 }
 
 export interface MedsData {
   name: string;
   amount: string;
+  notes: string;
 }
 
 export interface MiscData {

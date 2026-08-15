@@ -56,13 +56,13 @@ export function EntryForm({
       case "breast":
         return { duration: duration ? Number(duration) : null, side, notes };
       case "pump":
-        return { side, volume: volume ? Number(volume) : null };
+        return { side, volume: volume ? Number(volume) : null, notes };
       case "solids":
-        return { contents, weight: weight ? Number(weight) : null };
+        return { contents, weight: weight ? Number(weight) : null, notes };
       case "sleep":
-        return { duration: duration ? Number(duration) : null };
+        return { duration: duration ? Number(duration) : null, notes };
       case "meds":
-        return { name: medsName, amount: medsAmount };
+        return { name: medsName, amount: medsAmount, notes };
       case "misc":
         return { notes };
     }
@@ -207,6 +207,10 @@ export function EntryForm({
               onChange={(e) => setVolume(e.target.value)}
             />
           </label>
+          <label className="field">
+            <span>Notes</span>
+            <input type="text" value={notes} onChange={(e) => setNotes(e.target.value)} />
+          </label>
         </>
       )}
 
@@ -225,19 +229,29 @@ export function EntryForm({
               onChange={(e) => setWeight(e.target.value)}
             />
           </label>
+          <label className="field">
+            <span>Notes</span>
+            <input type="text" value={notes} onChange={(e) => setNotes(e.target.value)} />
+          </label>
         </>
       )}
 
       {type === "sleep" && (
-        <label className="field">
-          <span>Duration (min)</span>
-          <input
-            type="number"
-            inputMode="numeric"
-            value={duration}
-            onChange={(e) => setDuration(e.target.value)}
-          />
-        </label>
+        <>
+          <label className="field">
+            <span>Duration (min)</span>
+            <input
+              type="number"
+              inputMode="numeric"
+              value={duration}
+              onChange={(e) => setDuration(e.target.value)}
+            />
+          </label>
+          <label className="field">
+            <span>Notes</span>
+            <input type="text" value={notes} onChange={(e) => setNotes(e.target.value)} />
+          </label>
+        </>
       )}
 
       {type === "meds" && (
@@ -253,6 +267,10 @@ export function EntryForm({
               value={medsAmount}
               onChange={(e) => setMedsAmount(e.target.value)}
             />
+          </label>
+          <label className="field">
+            <span>Notes</span>
+            <input type="text" value={notes} onChange={(e) => setNotes(e.target.value)} />
           </label>
         </>
       )}
