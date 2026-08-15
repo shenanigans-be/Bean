@@ -1,62 +1,70 @@
 :root {
-  --bg: #fafafa;
+  --bg: #f5f5f5;
   --surface: #ffffff;
-  --text: #1a1a1a;
-  --text-muted: #6b6b6b;
-  --border: #e0e0e0;
-  --accent: #3d7a5c;
-  --accent-text: #ffffff;
+  --text: #143a40;
+  --text-muted: #5c7a7e;
+  --border: #e0e6e7;
+  --accent: #143a40;
+  --accent-text: #f5f5f5;
   --danger: #b3441e;
   color-scheme: light;
 
-  /* diaper: warm amber */
-  --diaper-bg: #fcebd5;
-  --diaper-bg-strong: #f8d9ae;
-  --diaper-accent: #b5651d;
+  /* diaper: amber */
+  --diaper-bg: #fdf1da;
+  --diaper-bg-strong: #f9dda0;
+  --diaper-accent: #f2aa1b;
+  --diaper-on-accent: #143a40;
 
-  /* bottle: blue, lighter shade (same family as breast) */
-  --bottle-bg: #dcedfb;
-  --bottle-bg-strong: #b9dff6;
-  --bottle-accent: #2e7bb6;
+  /* bottle: cyan, lighter variation (same family as breast) */
+  --bottle-bg: #e3f8fa;
+  --bottle-bg-strong: #b0e9ef;
+  --bottle-accent: #2ec8d9;
+  --bottle-on-accent: #143a40;
 
-  /* breast: blue, deeper shade (same family as bottle) */
-  --breast-bg: #b9dff6;
-  --breast-bg-strong: #8fc7ee;
-  --breast-accent: #1f5e8c;
+  /* breast: cyan, deeper variation (same family as bottle) */
+  --breast-bg: #c9eef2;
+  --breast-bg-strong: #8fdce3;
+  --breast-accent: #1fa3b3;
+  --breast-on-accent: #143a40;
 
-  /* pump: violet (distinct family from bottle/breast) */
-  --pump-bg: #f0e0f7;
-  --pump-bg-strong: #dfc1ef;
-  --pump-accent: #9b4fc0;
+  /* pump: pink/red */
+  --pump-bg: #fce2e7;
+  --pump-bg-strong: #f7b8c4;
+  --pump-accent: #f0516f;
+  --pump-on-accent: #f5f5f5;
 }
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --bg: #121212;
-    --surface: #1c1c1c;
-    --text: #f2f2f2;
-    --text-muted: #a0a0a0;
-    --border: #333333;
-    --accent: #5ba57e;
-    --accent-text: #0c0c0c;
+    --bg: #143a40;
+    --surface: #1b4750;
+    --text: #f5f5f5;
+    --text-muted: #9fb9bc;
+    --border: #2a555d;
+    --accent: #f5f5f5;
+    --accent-text: #143a40;
     --danger: #e08a5f;
     color-scheme: dark;
 
-    --diaper-bg: #3a2e1c;
-    --diaper-bg-strong: #4a3820;
-    --diaper-accent: #e3a85c;
+    --diaper-bg: #3d2f16;
+    --diaper-bg-strong: #4f3d1c;
+    --diaper-accent: #f2aa1b;
+    --diaper-on-accent: #143a40;
 
-    --bottle-bg: #1b2e40;
-    --bottle-bg-strong: #1f3b54;
-    --bottle-accent: #6fb3e8;
+    --bottle-bg: #113238;
+    --bottle-bg-strong: #154048;
+    --bottle-accent: #2ec8d9;
+    --bottle-on-accent: #143a40;
 
-    --breast-bg: #1f3b54;
-    --breast-bg-strong: #24496b;
-    --breast-accent: #8ecdf7;
+    --breast-bg: #154048;
+    --breast-bg-strong: #1b4f58;
+    --breast-accent: #4dd8e5;
+    --breast-on-accent: #143a40;
 
-    --pump-bg: #3a2245;
-    --pump-bg-strong: #4a2c58;
-    --pump-accent: #d08fec;
+    --pump-bg: #3d1b22;
+    --pump-bg-strong: #4f222b;
+    --pump-accent: #f0516f;
+    --pump-on-accent: #f5f5f5;
   }
 }
 
@@ -195,6 +203,34 @@ body {
   color: var(--accent-text);
 }
 
+.entry-form[data-type="diaper"] .segment-active,
+.settings-group[data-type="diaper"] .segment-active {
+  border-color: var(--diaper-accent);
+  background: var(--diaper-accent);
+  color: var(--diaper-on-accent);
+}
+
+.entry-form[data-type="bottle"] .segment-active,
+.settings-group[data-type="bottle"] .segment-active {
+  border-color: var(--bottle-accent);
+  background: var(--bottle-accent);
+  color: var(--bottle-on-accent);
+}
+
+.entry-form[data-type="breast"] .segment-active,
+.settings-group[data-type="breast"] .segment-active {
+  border-color: var(--breast-accent);
+  background: var(--breast-accent);
+  color: var(--breast-on-accent);
+}
+
+.entry-form[data-type="pump"] .segment-active,
+.settings-group[data-type="pump"] .segment-active {
+  border-color: var(--pump-accent);
+  background: var(--pump-accent);
+  color: var(--pump-on-accent);
+}
+
 .form-error {
   color: var(--danger);
   font-size: 0.85rem;
@@ -230,6 +266,30 @@ body {
 
 .btn-primary:disabled {
   opacity: 0.6;
+}
+
+.entry-form[data-type="diaper"] .btn-primary {
+  background: var(--diaper-accent);
+  color: var(--diaper-on-accent);
+  border-color: var(--diaper-accent);
+}
+
+.entry-form[data-type="bottle"] .btn-primary {
+  background: var(--bottle-accent);
+  color: var(--bottle-on-accent);
+  border-color: var(--bottle-accent);
+}
+
+.entry-form[data-type="breast"] .btn-primary {
+  background: var(--breast-accent);
+  color: var(--breast-on-accent);
+  border-color: var(--breast-accent);
+}
+
+.entry-form[data-type="pump"] .btn-primary {
+  background: var(--pump-accent);
+  color: var(--pump-on-accent);
+  border-color: var(--pump-accent);
 }
 
 .btn-secondary {

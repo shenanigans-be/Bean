@@ -85,7 +85,7 @@ export function SettingsPanel({
 
           <h3>Default values</h3>
 
-          <div className="settings-group">
+          <div className="settings-group" data-type="diaper">
             <span className="settings-group-label">🧷 Diaper — kind</span>
             <SegmentedControl
               options={[
@@ -98,7 +98,7 @@ export function SettingsPanel({
             />
           </div>
 
-          <div className="settings-group">
+          <div className="settings-group" data-type="bottle">
             <span className="settings-group-label">🍼 Bottle — source</span>
             <SegmentedControl
               options={[
@@ -119,7 +119,7 @@ export function SettingsPanel({
             />
           </label>
 
-          <div className="settings-group">
+          <div className="settings-group" data-type="breast">
             <span className="settings-group-label">🤱 Breast — side</span>
             <SegmentedControl
               options={[
@@ -141,7 +141,7 @@ export function SettingsPanel({
             />
           </label>
 
-          <div className="settings-group">
+          <div className="settings-group" data-type="pump">
             <span className="settings-group-label">🥛 Pump — side</span>
             <SegmentedControl
               options={[
