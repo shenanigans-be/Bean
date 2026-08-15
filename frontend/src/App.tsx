@@ -5,8 +5,10 @@ import { ENTRY_META } from "./entryMeta";
 import { EntryForm } from "./components/EntryForm";
 import { EntryTypeButtons } from "./components/EntryTypeButtons";
 import { Log } from "./components/Log";
+import { Onboarding } from "./components/Onboarding";
 import { SettingsPanel } from "./components/SettingsPanel";
-import { ENTRY_TYPES, isCategoryEnabled, type AppSettings, type Entry, type EntryType, type NewEntry } from "./types";
+import { ENTRY_TYPES, isCategoryEnabled, type AppSettings, type EnabledCategories, type Entry, type EntryType, type NewEntry } from "./types";
+import { hasOnboarded, setOnboarded } from "./utils/onboarding";
 import { getTheme, setTheme as persistTheme, type Theme } from "./utils/theme";
 import { getWhoAmI, setWhoAmI as persistWhoAmI } from "./utils/whoami";
 
@@ -20,6 +22,7 @@ export default function App() {
   const [whoAmI, setWhoAmIState] = useState(getWhoAmI());
   const [theme, setThemeState] = useState<Theme>(getTheme());
   const [settingsOpen, setSettingsOpen] = useState(false);
+  const [onboarded, setOnboardedState] = useState(hasOnboarded());
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -94,6 +97,21 @@ export default function App() {
     setThemeState(next);
   }
 
+  async function handleCompleteOnboarding(data: {
+    whoAmI: string;
+    enabledCategories: EnabledCategories;
+  }) {
+    persistWhoAmI(data.whoAmI);
+    setWhoAmIState(data.whoAmI.trim());
+    const saved = await api.updateSettings({
+      defaults: settings.defaults,
+      enabledCategories: data.enabledCategories,
+    });
+    setSettings(saved);
+    setOnboarded();
+    setOnboardedState(true);
+  }
+
   const EditingIcon = editingEntry ? ENTRY_META[editingEntry.type].icon : null;
 
   return (
@@ -143,6 +161,13 @@ export default function App() {
           theme={theme}
           onChangeTheme={handleChangeTheme}
           onClose={() => setSettingsOpen(false)}
+        />
+      )}
+
+      {!loading && !onboarded && (
+        <Onboarding
+          initialEnabled={settings.enabledCategories}
+          onComplete={handleCompleteOnboarding}
         />
       )}
 

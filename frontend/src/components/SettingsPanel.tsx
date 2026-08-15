@@ -104,6 +104,10 @@ export function SettingsPanel({
           </label>
 
           <h3>Categories &amp; default values</h3>
+          <p className="settings-hint">
+            You can show/hide each category and specify an (optional) default value for
+            everything.
+          </p>
 
           {ENTRY_TYPES.map((type) => {
             const d = getDefault(type);
