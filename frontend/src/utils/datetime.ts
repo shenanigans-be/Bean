@@ -15,6 +15,24 @@ export function formatNow(): string {
   return formatDateTime(new Date());
 }
 
+/**
+ * Reformats free-typed input into "dd/mm/yyyy - HH:MM" as the user types, inserting
+ * the /, -, and : separators automatically so they only ever need to type digits.
+ * Ignores any non-digit characters already present (so it's safe to run on every
+ * keystroke, including ones that land on top of a separator it just inserted).
+ */
+export function formatDateTimeInput(raw: string): string {
+  const digits = raw.replace(/\D/g, "").slice(0, 12);
+  let out = "";
+  for (let i = 0; i < digits.length; i++) {
+    if (i === 2 || i === 4) out += "/";
+    if (i === 8) out += " - ";
+    if (i === 10) out += ":";
+    out += digits[i];
+  }
+  return out;
+}
+
 /** Validates the "dd/mm/yyyy - HH:MM" format and that the date is real (rejects e.g. 31/02). */
 export function isValidDateTime(value: string): boolean {
   const match = OCCURRED_AT_RE.exec(value);

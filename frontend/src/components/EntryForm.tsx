@@ -9,7 +9,7 @@ import type {
   NewEntry,
   Side,
 } from "../types";
-import { formatNow, isValidDateTime } from "../utils/datetime";
+import { formatDateTimeInput, formatNow, isValidDateTime } from "../utils/datetime";
 import { SegmentedControl } from "./SegmentedControl";
 
 interface EntryFormProps {
@@ -98,7 +98,7 @@ export function EntryForm({
         <input
           type="text"
           value={occurredAt}
-          onChange={(e) => setOccurredAt(e.target.value)}
+          onChange={(e) => setOccurredAt(formatDateTimeInput(e.target.value))}
           placeholder="dd/mm/yyyy - HH:MM"
           autoCapitalize="off"
           autoCorrect="off"
