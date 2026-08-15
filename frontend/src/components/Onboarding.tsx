@@ -50,7 +50,7 @@ export function Onboarding({ initialEnabled, onComplete }: OnboardingProps) {
 
           <h3>Which categories do you want to track?</h3>
           <p className="settings-hint">
-            You can also set an optional default value for each field in Settings.
+            You can also set an optional default value for each field in Settings later.
           </p>
 
           <div className="onboarding-categories">
