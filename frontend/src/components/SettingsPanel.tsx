@@ -1,0 +1,180 @@
+import { useState, type FormEvent } from "react";
+import type { BottleSource, Defaults, DiaperKind, Side } from "../types";
+import { SegmentedControl } from "./SegmentedControl";
+
+interface SettingsPanelProps {
+  defaults: Defaults;
+  onSaveDefaults: (defaults: Defaults) => Promise<void>;
+  whoAmI: string;
+  onChangeWhoAmI: (name: string) => void;
+  onClose: () => void;
+}
+
+export function SettingsPanel({
+  defaults,
+  onSaveDefaults,
+  whoAmI,
+  onChangeWhoAmI,
+  onClose,
+}: SettingsPanelProps) {
+  const [diaperKind, setDiaperKind] = useState<DiaperKind | null>(
+    defaults.diaper?.kind ?? null
+  );
+  const [bottleSource, setBottleSource] = useState<BottleSource | null>(
+    defaults.bottle?.source ?? null
+  );
+  const [bottleVolume, setBottleVolume] = useState(
+    defaults.bottle?.volume != null ? String(defaults.bottle.volume) : ""
+  );
+  const [breastSide, setBreastSide] = useState<Side | null>(defaults.breast?.side ?? null);
+  const [breastDuration, setBreastDuration] = useState(
+    defaults.breast?.duration != null ? String(defaults.breast.duration) : ""
+  );
+  const [pumpSide, setPumpSide] = useState<Side | null>(defaults.pump?.side ?? null);
+  const [pumpVolume, setPumpVolume] = useState(
+    defaults.pump?.volume != null ? String(defaults.pump.volume) : ""
+  );
+  const [localWhoAmI, setLocalWhoAmI] = useState(whoAmI);
+  const [saving, setSaving] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  async function handleSave(e: FormEvent) {
+    e.preventDefault();
+    setSaving(true);
+    setError(null);
+    const newDefaults: Defaults = {
+      diaper: diaperKind ? { kind: diaperKind } : {},
+      bottle: {
+        ...(bottleSource ? { source: bottleSource } : {}),
+        ...(bottleVolume ? { volume: Number(bottleVolume) } : {}),
+      },
+      breast: {
+        ...(breastSide ? { side: breastSide } : {}),
+        ...(breastDuration ? { duration: Number(breastDuration) } : {}),
+      },
+      pump: {
+        ...(pumpSide ? { side: pumpSide } : {}),
+        ...(pumpVolume ? { volume: Number(pumpVolume) } : {}),
+      },
+    };
+    try {
+      await onSaveDefaults(newDefaults);
+      onChangeWhoAmI(localWhoAmI);
+      onClose();
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Failed to save");
+    } finally {
+      setSaving(false);
+    }
+  }
+
+  return (
+    <div className="settings-overlay" onClick={onClose}>
+      <div className="settings-panel" onClick={(e) => e.stopPropagation()}>
+        <h2>Settings</h2>
+        <form onSubmit={handleSave}>
+          <label className="field">
+            <span>Who am I</span>
+            <input
+              type="text"
+              value={localWhoAmI}
+              onChange={(e) => setLocalWhoAmI(e.target.value)}
+              placeholder="Your name"
+            />
+          </label>
+
+          <h3>Default values</h3>
+
+          <div className="settings-group">
+            <span className="settings-group-label">🧷 Diaper — kind</span>
+            <SegmentedControl
+              options={[
+                { value: "wet", label: "Wet" },
+                { value: "dirty", label: "Dirty" },
+                { value: "both", label: "Both" },
+              ]}
+              value={diaperKind}
+              onChange={setDiaperKind}
+            />
+          </div>
+
+          <div className="settings-group">
+            <span className="settings-group-label">🍼 Bottle — source</span>
+            <SegmentedControl
+              options={[
+                { value: "formula", label: "Formula" },
+                { value: "pumped", label: "Pumped" },
+              ]}
+              value={bottleSource}
+              onChange={setBottleSource}
+            />
+          </div>
+          <label className="field">
+            <span>🍼 Bottle — volume (ml)</span>
+            <input
+              type="number"
+              inputMode="numeric"
+              value={bottleVolume}
+              onChange={(e) => setBottleVolume(e.target.value)}
+            />
+          </label>
+
+          <div className="settings-group">
+            <span className="settings-group-label">🤱 Breast — side</span>
+            <SegmentedControl
+              options={[
+                { value: "left", label: "Left" },
+                { value: "right", label: "Right" },
+                { value: "both", label: "Both" },
+              ]}
+              value={breastSide}
+              onChange={setBreastSide}
+            />
+          </div>
+          <label className="field">
+            <span>🤱 Breast — duration (min)</span>
+            <input
+              type="number"
+              inputMode="numeric"
+              value={breastDuration}
+              onChange={(e) => setBreastDuration(e.target.value)}
+            />
+          </label>
+
+          <div className="settings-group">
+            <span className="settings-group-label">🥛 Pump — side</span>
+            <SegmentedControl
+              options={[
+                { value: "left", label: "Left" },
+                { value: "right", label: "Right" },
+                { value: "both", label: "Both" },
+              ]}
+              value={pumpSide}
+              onChange={setPumpSide}
+            />
+          </div>
+          <label className="field">
+            <span>🥛 Pump — volume (ml)</span>
+            <input
+              type="number"
+              inputMode="numeric"
+              value={pumpVolume}
+              onChange={(e) => setPumpVolume(e.target.value)}
+            />
+          </label>
+
+          {error && <p className="form-error">{error}</p>}
+
+          <div className="form-actions">
+            <button type="button" className="btn-secondary" onClick={onClose}>
+              Cancel
+            </button>
+            <button type="submit" className="btn-primary" disabled={saving}>
+              {saving ? "Saving…" : "Save"}
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  );
+}
