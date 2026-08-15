@@ -32,7 +32,7 @@ your machine, change the `3000:80` mapping in `docker-compose.yml`.
    repo (`docker-compose.yml` in the root).
 3. Assign a domain to the `frontend` service (port 80 inside the container) — that's
    the only service that needs to be public. `backend` stays internal; `frontend`'s
-   nginx proxies `/api/*` to it over the compose network.
+   Caddy server proxies `/api/*` to it over the compose network.
 4. The `bean-data` named volume holds the SQLite database — Coolify keeps it across
    redeploys as long as the volume isn't removed.
 

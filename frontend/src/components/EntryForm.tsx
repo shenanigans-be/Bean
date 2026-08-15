@@ -1,8 +1,10 @@
 import { useState, type FormEvent } from "react";
+import { ENTRY_META } from "../entryMeta";
 import type {
   BottleSource,
   Defaults,
   DiaperKind,
+  Entry,
   EntryType,
   NewEntry,
   Side,
@@ -14,20 +16,30 @@ interface EntryFormProps {
   type: EntryType;
   defaults: Defaults;
   whoAmI: string;
+  entry?: Entry;
   onSubmit: (entry: NewEntry) => Promise<void>;
   onCancel: () => void;
+  onDelete?: () => void;
 }
 
-export function EntryForm({ type, defaults, whoAmI, onSubmit, onCancel }: EntryFormProps) {
-  const d = defaults[type] as Record<string, unknown> | undefined;
+export function EntryForm({
+  type,
+  defaults,
+  whoAmI,
+  entry,
+  onSubmit,
+  onCancel,
+  onDelete,
+}: EntryFormProps) {
+  const initial = (entry?.data as Record<string, unknown> | undefined) ?? (defaults[type] as Record<string, unknown> | undefined);
 
-  const [occurredAt, setOccurredAt] = useState(formatNow());
-  const [kind, setKind] = useState<DiaperKind>((d?.kind as DiaperKind) ?? "wet");
-  const [source, setSource] = useState<BottleSource>((d?.source as BottleSource) ?? "formula");
-  const [side, setSide] = useState<Side>((d?.side as Side) ?? "both");
-  const [volume, setVolume] = useState(d?.volume != null ? String(d.volume) : "");
-  const [duration, setDuration] = useState(d?.duration != null ? String(d.duration) : "");
-  const [notes, setNotes] = useState((d?.notes as string) ?? "");
+  const [occurredAt, setOccurredAt] = useState(entry?.occurredAt ?? formatNow());
+  const [kind, setKind] = useState<DiaperKind>((initial?.kind as DiaperKind) ?? "wet");
+  const [source, setSource] = useState<BottleSource>((initial?.source as BottleSource) ?? "formula");
+  const [side, setSide] = useState<Side>((initial?.side as Side) ?? "both");
+  const [volume, setVolume] = useState(initial?.volume != null ? String(initial.volume) : "");
+  const [duration, setDuration] = useState(initial?.duration != null ? String(initial.duration) : "");
+  const [notes, setNotes] = useState((initial?.notes as string) ?? "");
   const [error, setError] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
 
@@ -53,15 +65,22 @@ export function EntryForm({ type, defaults, whoAmI, onSubmit, onCancel }: EntryF
     setError(null);
     setSubmitting(true);
     try {
-      await onSubmit({ type, occurredAt, createdBy: whoAmI || null, data: buildData() });
+      const createdBy = entry ? entry.createdBy : whoAmI || null;
+      await onSubmit({ type, occurredAt, createdBy, data: buildData() });
     } catch (err) {
       setError(err instanceof Error ? err.message : "Failed to save");
       setSubmitting(false);
     }
   }
 
+  function handleDelete() {
+    if (window.confirm(`Delete this ${ENTRY_META[type].label.toLowerCase()} entry?`)) {
+      onDelete?.();
+    }
+  }
+
   return (
-    <form className="entry-form" onSubmit={handleSubmit}>
+    <form className="entry-form" data-type={type} onSubmit={handleSubmit}>
       <label className="field">
         <span>Time</span>
         <input
@@ -176,12 +195,19 @@ export function EntryForm({ type, defaults, whoAmI, onSubmit, onCancel }: EntryF
       {error && <p className="form-error">{error}</p>}
 
       <div className="form-actions">
-        <button type="button" className="btn-secondary" onClick={onCancel}>
-          Cancel
-        </button>
-        <button type="submit" className="btn-primary" disabled={submitting}>
-          {submitting ? "Saving…" : "Save"}
-        </button>
+        {onDelete && (
+          <button type="button" className="btn-danger" onClick={handleDelete}>
+            Delete
+          </button>
+        )}
+        <div className="form-actions-right">
+          <button type="button" className="btn-secondary" onClick={onCancel}>
+            Cancel
+          </button>
+          <button type="submit" className="btn-primary" disabled={submitting}>
+            {submitting ? "Saving…" : "Save"}
+          </button>
+        </div>
       </div>
     </form>
   );

@@ -1,4 +1,4 @@
-export const ENTRY_TYPES = ["diaper", "bottle", "pump", "breast"] as const;
+export const ENTRY_TYPES = ["diaper", "bottle", "breast", "pump"] as const;
 export type EntryType = (typeof ENTRY_TYPES)[number];
 
 export type DiaperKind = "wet" | "dirty" | "both";

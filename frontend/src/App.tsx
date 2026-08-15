@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { api } from "./api";
+import { ENTRY_META } from "./entryMeta";
 import { EntryForm } from "./components/EntryForm";
 import { EntryTypeButtons } from "./components/EntryTypeButtons";
 import { Log } from "./components/Log";
@@ -11,6 +12,7 @@ export default function App() {
   const [entries, setEntries] = useState<Entry[]>([]);
   const [defaults, setDefaults] = useState<Defaults>({});
   const [activeType, setActiveType] = useState<EntryType | null>(null);
+  const [editingEntry, setEditingEntry] = useState<Entry | null>(null);
   const [whoAmI, setWhoAmIState] = useState(getWhoAmI());
   const [settingsOpen, setSettingsOpen] = useState(false);
   const [loading, setLoading] = useState(true);
@@ -43,6 +45,24 @@ export default function App() {
     } catch {
       await refreshEntries();
     }
+  }
+
+  async function handleUpdate(entry: NewEntry) {
+    if (!editingEntry) return;
+    await api.updateEntry(editingEntry.id, {
+      occurredAt: entry.occurredAt,
+      createdBy: entry.createdBy,
+      data: entry.data,
+    });
+    setEditingEntry(null);
+    await refreshEntries();
+  }
+
+  async function handleDeleteFromDrawer() {
+    if (!editingEntry) return;
+    const id = editingEntry.id;
+    setEditingEntry(null);
+    await handleDelete(id);
   }
 
   async function handleSaveDefaults(newDefaults: Defaults) {
@@ -86,7 +106,11 @@ export default function App() {
 
       {error && <p className="form-error">{error}</p>}
 
-      {loading ? <p className="log-empty">Loading…</p> : <Log entries={entries} onDelete={handleDelete} />}
+      {loading ? (
+        <p className="log-empty">Loading…</p>
+      ) : (
+        <Log entries={entries} onSelect={setEditingEntry} />
+      )}
 
       {settingsOpen && (
         <SettingsPanel
@@ -96,6 +120,25 @@ export default function App() {
           onChangeWhoAmI={handleChangeWhoAmI}
           onClose={() => setSettingsOpen(false)}
         />
+      )}
+
+      {editingEntry && (
+        <div className="drawer-overlay" onClick={() => setEditingEntry(null)}>
+          <div className="drawer-panel" onClick={(e) => e.stopPropagation()}>
+            <h2>
+              {ENTRY_META[editingEntry.type].icon} Edit {ENTRY_META[editingEntry.type].label}
+            </h2>
+            <EntryForm
+              type={editingEntry.type}
+              defaults={defaults}
+              whoAmI={whoAmI}
+              entry={editingEntry}
+              onSubmit={handleUpdate}
+              onCancel={() => setEditingEntry(null)}
+              onDelete={handleDeleteFromDrawer}
+            />
+          </div>
+        </div>
       )}
     </div>
   );

@@ -15,6 +15,7 @@ export function EntryTypeButtons({ active, onSelect }: EntryTypeButtonsProps) {
           <button
             key={type}
             type="button"
+            data-type={type}
             className={type === active ? "entry-type-btn entry-type-btn-active" : "entry-type-btn"}
             onClick={() => onSelect(type)}
           >

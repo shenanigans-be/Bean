@@ -1,0 +1,16 @@
+:80 {
+	root * /srv
+	encode gzip
+
+	handle /api/* {
+		reverse_proxy backend:3001
+	}
+
+	handle {
+		@nocache path /sw.js /manifest.webmanifest
+		header @nocache Cache-Control "no-cache"
+
+		try_files {path} /index.html
+		file_server
+	}
+}

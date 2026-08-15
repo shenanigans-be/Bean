@@ -5,7 +5,7 @@ import { summarizeEntry } from "../utils/entrySummary";
 
 interface LogProps {
   entries: Entry[];
-  onDelete: (id: number) => void;
+  onSelect: (entry: Entry) => void;
 }
 
 interface DayGroup {
@@ -27,7 +27,7 @@ function groupByDay(entries: Entry[]): DayGroup[] {
   return groups;
 }
 
-export function Log({ entries, onDelete }: LogProps) {
+export function Log({ entries, onSelect }: LogProps) {
   if (entries.length === 0) {
     return <p className="log-empty">No entries yet.</p>;
   }
@@ -41,17 +41,16 @@ export function Log({ entries, onDelete }: LogProps) {
           <h2 className="log-day-heading">{formatDayHeading(group.dayKey)}</h2>
           <ul className="log-entries">
             {group.entries.map((entry) => (
-              <li key={entry.id} className="log-entry">
-                <span className="log-entry-icon">{ENTRY_META[entry.type].icon}</span>
-                <span className="log-entry-time">{timeOf(entry.occurredAt)}</span>
-                <span className="log-entry-summary">{summarizeEntry(entry)}</span>
+              <li key={entry.id}>
                 <button
                   type="button"
-                  className="log-entry-delete"
-                  aria-label="Delete entry"
-                  onClick={() => onDelete(entry.id)}
+                  className="log-entry"
+                  data-type={entry.type}
+                  onClick={() => onSelect(entry)}
                 >
-                  ×
+                  <span className="log-entry-icon">{ENTRY_META[entry.type].icon}</span>
+                  <span className="log-entry-time">{timeOf(entry.occurredAt)}</span>
+                  <span className="log-entry-summary">{summarizeEntry(entry)}</span>
                 </button>
               </li>
             ))}

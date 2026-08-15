@@ -69,8 +69,8 @@ export function SettingsPanel({
   }
 
   return (
-    <div className="settings-overlay" onClick={onClose}>
-      <div className="settings-panel" onClick={(e) => e.stopPropagation()}>
+    <div className="drawer-overlay" onClick={onClose}>
+      <div className="drawer-panel" onClick={(e) => e.stopPropagation()}>
         <h2>Settings</h2>
         <form onSubmit={handleSave}>
           <label className="field">
