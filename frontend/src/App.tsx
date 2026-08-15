@@ -6,6 +6,7 @@ import { EntryTypeButtons } from "./components/EntryTypeButtons";
 import { Log } from "./components/Log";
 import { SettingsPanel } from "./components/SettingsPanel";
 import type { Defaults, Entry, EntryType, NewEntry } from "./types";
+import { getTheme, setTheme as persistTheme, type Theme } from "./utils/theme";
 import { getWhoAmI, setWhoAmI as persistWhoAmI } from "./utils/whoami";
 
 export default function App() {
@@ -14,6 +15,7 @@ export default function App() {
   const [activeType, setActiveType] = useState<EntryType | null>(null);
   const [editingEntry, setEditingEntry] = useState<Entry | null>(null);
   const [whoAmI, setWhoAmIState] = useState(getWhoAmI());
+  const [theme, setThemeState] = useState<Theme>(getTheme());
   const [settingsOpen, setSettingsOpen] = useState(false);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -27,6 +29,10 @@ export default function App() {
       .catch((err) => setError(err instanceof Error ? err.message : "Failed to load"))
       .finally(() => setLoading(false));
   }, []);
+
+  useEffect(() => {
+    document.documentElement.dataset.theme = theme;
+  }, [theme]);
 
   async function refreshEntries() {
     setEntries(await api.getEntries());
@@ -75,6 +81,11 @@ export default function App() {
     setWhoAmIState(name.trim());
   }
 
+  function handleChangeTheme(next: Theme) {
+    persistTheme(next);
+    setThemeState(next);
+  }
+
   return (
     <div className="app">
       <header className="app-header">
@@ -118,6 +129,8 @@ export default function App() {
           onSaveDefaults={handleSaveDefaults}
           whoAmI={whoAmI}
           onChangeWhoAmI={handleChangeWhoAmI}
+          theme={theme}
+          onChangeTheme={handleChangeTheme}
           onClose={() => setSettingsOpen(false)}
         />
       )}

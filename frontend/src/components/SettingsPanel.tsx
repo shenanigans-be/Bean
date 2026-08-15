@@ -1,5 +1,6 @@
 import { useState, type FormEvent } from "react";
 import type { BottleSource, Defaults, DiaperKind, Side } from "../types";
+import type { Theme } from "../utils/theme";
 import { SegmentedControl } from "./SegmentedControl";
 
 interface SettingsPanelProps {
@@ -7,6 +8,8 @@ interface SettingsPanelProps {
   onSaveDefaults: (defaults: Defaults) => Promise<void>;
   whoAmI: string;
   onChangeWhoAmI: (name: string) => void;
+  theme: Theme;
+  onChangeTheme: (theme: Theme) => void;
   onClose: () => void;
 }
 
@@ -15,6 +18,8 @@ export function SettingsPanel({
   onSaveDefaults,
   whoAmI,
   onChangeWhoAmI,
+  theme,
+  onChangeTheme,
   onClose,
 }: SettingsPanelProps) {
   const [diaperKind, setDiaperKind] = useState<DiaperKind | null>(
@@ -82,6 +87,19 @@ export function SettingsPanel({
               placeholder="Your name"
             />
           </label>
+
+          <div className="settings-group">
+            <span className="settings-group-label">Theme</span>
+            <SegmentedControl
+              options={[
+                { value: "light", label: "Light" },
+                { value: "dark", label: "Dark" },
+                { value: "auto", label: "Auto" },
+              ]}
+              value={theme}
+              onChange={onChangeTheme}
+            />
+          </div>
 
           <h3>Default values</h3>
 

@@ -24,18 +24,18 @@
   /* breast: cyan, deeper variation (same family as bottle) */
   --breast-bg: #c9eef2;
   --breast-bg-strong: #8fdce3;
-  --breast-accent: #1fa3b3;
+  --breast-accent: #24afc0;
   --breast-on-accent: #143a40;
 
   /* pump: pink/red */
   --pump-bg: #fce2e7;
   --pump-bg-strong: #f7b8c4;
   --pump-accent: #f0516f;
-  --pump-on-accent: #f5f5f5;
+  --pump-on-accent: #143a40;
 }
 
 @media (prefers-color-scheme: dark) {
-  :root {
+  :root:not([data-theme="light"]) {
     --bg: #143a40;
     --surface: #1b4750;
     --text: #f5f5f5;
@@ -64,8 +64,40 @@
     --pump-bg: #3d1b22;
     --pump-bg-strong: #4f222b;
     --pump-accent: #f0516f;
-    --pump-on-accent: #f5f5f5;
+    --pump-on-accent: #143a40;
   }
+}
+
+:root[data-theme="dark"] {
+  --bg: #143a40;
+  --surface: #1b4750;
+  --text: #f5f5f5;
+  --text-muted: #9fb9bc;
+  --border: #2a555d;
+  --accent: #f5f5f5;
+  --accent-text: #143a40;
+  --danger: #e08a5f;
+  color-scheme: dark;
+
+  --diaper-bg: #3d2f16;
+  --diaper-bg-strong: #4f3d1c;
+  --diaper-accent: #f2aa1b;
+  --diaper-on-accent: #143a40;
+
+  --bottle-bg: #113238;
+  --bottle-bg-strong: #154048;
+  --bottle-accent: #2ec8d9;
+  --bottle-on-accent: #143a40;
+
+  --breast-bg: #154048;
+  --breast-bg-strong: #1b4f58;
+  --breast-accent: #4dd8e5;
+  --breast-on-accent: #143a40;
+
+  --pump-bg: #3d1b22;
+  --pump-bg-strong: #4f222b;
+  --pump-accent: #f0516f;
+  --pump-on-accent: #143a40;
 }
 
 * {
@@ -201,6 +233,7 @@ body {
   border-color: var(--accent);
   background: var(--accent);
   color: var(--accent-text);
+  font-weight: 600;
 }
 
 .entry-form[data-type="diaper"] .segment-active,
@@ -262,6 +295,7 @@ body {
   background: var(--accent);
   color: var(--accent-text);
   border-color: var(--accent);
+  font-weight: 600;
 }
 
 .btn-primary:disabled {
