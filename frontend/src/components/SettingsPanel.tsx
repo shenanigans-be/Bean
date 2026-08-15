@@ -1,17 +1,12 @@
-import { useState, type FormEvent } from "react";
-import { ENTRY_META } from "../entryMeta";
-import type { BottleSource, Defaults, DiaperKind, Side } from "../types";
+import { useState, type FormEvent, type ReactNode } from "react";
+import { categoryVars, ENTRY_META } from "../entryMeta";
+import { ENTRY_TYPES, isCategoryEnabled, type AppSettings, type Defaults, type EnabledCategories, type EntryType } from "../types";
 import type { Theme } from "../utils/theme";
 import { SegmentedControl } from "./SegmentedControl";
 
-const DiaperIcon = ENTRY_META.diaper.icon;
-const BottleIcon = ENTRY_META.bottle.icon;
-const BreastIcon = ENTRY_META.breast.icon;
-const PumpIcon = ENTRY_META.pump.icon;
-
 interface SettingsPanelProps {
-  defaults: Defaults;
-  onSaveDefaults: (defaults: Defaults) => Promise<void>;
+  settings: AppSettings;
+  onSave: (settings: AppSettings) => Promise<void>;
   whoAmI: string;
   onChangeWhoAmI: (name: string) => void;
   theme: Theme;
@@ -19,57 +14,71 @@ interface SettingsPanelProps {
   onClose: () => void;
 }
 
+interface CategorySectionProps {
+  type: EntryType;
+  enabled: boolean;
+  onToggle: () => void;
+  children: ReactNode;
+}
+
+function CategorySection({ type, enabled, onToggle, children }: CategorySectionProps) {
+  const meta = ENTRY_META[type];
+  const Icon = meta.icon;
+  return (
+    <div className="settings-category" style={categoryVars(type)}>
+      <div className="settings-category-header">
+        <span className="settings-group-label">
+          <Icon size={16} /> {meta.label}
+        </span>
+        <label className="category-toggle">
+          <input type="checkbox" checked={enabled} onChange={onToggle} />
+          {enabled ? "Shown" : "Hidden"}
+        </label>
+      </div>
+      {enabled && <div className="settings-category-fields">{children}</div>}
+    </div>
+  );
+}
+
 export function SettingsPanel({
-  defaults,
-  onSaveDefaults,
+  settings,
+  onSave,
   whoAmI,
   onChangeWhoAmI,
   theme,
   onChangeTheme,
   onClose,
 }: SettingsPanelProps) {
-  const [diaperKind, setDiaperKind] = useState<DiaperKind | null>(
-    defaults.diaper?.kind ?? null
-  );
-  const [bottleSource, setBottleSource] = useState<BottleSource | null>(
-    defaults.bottle?.source ?? null
-  );
-  const [bottleVolume, setBottleVolume] = useState(
-    defaults.bottle?.volume != null ? String(defaults.bottle.volume) : ""
-  );
-  const [breastSide, setBreastSide] = useState<Side | null>(defaults.breast?.side ?? null);
-  const [breastDuration, setBreastDuration] = useState(
-    defaults.breast?.duration != null ? String(defaults.breast.duration) : ""
-  );
-  const [pumpSide, setPumpSide] = useState<Side | null>(defaults.pump?.side ?? null);
-  const [pumpVolume, setPumpVolume] = useState(
-    defaults.pump?.volume != null ? String(defaults.pump.volume) : ""
-  );
+  const [localDefaults, setLocalDefaults] = useState<Defaults>(settings.defaults);
+  const [localEnabled, setLocalEnabled] = useState<EnabledCategories>(settings.enabledCategories);
   const [localWhoAmI, setLocalWhoAmI] = useState(whoAmI);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  function getDefault(type: EntryType): Record<string, unknown> {
+    return (localDefaults[type] as Record<string, unknown> | undefined) ?? {};
+  }
+
+  function updateDefault(type: EntryType, patch: Record<string, unknown>) {
+    setLocalDefaults(
+      (prev) =>
+        ({
+          ...prev,
+          [type]: { ...(prev[type] as Record<string, unknown> | undefined), ...patch },
+        }) as Defaults
+    );
+  }
+
+  function toggleCategory(type: EntryType) {
+    setLocalEnabled((prev) => ({ ...prev, [type]: !isCategoryEnabled(prev, type) }));
+  }
 
   async function handleSave(e: FormEvent) {
     e.preventDefault();
     setSaving(true);
     setError(null);
-    const newDefaults: Defaults = {
-      diaper: diaperKind ? { kind: diaperKind } : {},
-      bottle: {
-        ...(bottleSource ? { source: bottleSource } : {}),
-        ...(bottleVolume ? { volume: Number(bottleVolume) } : {}),
-      },
-      breast: {
-        ...(breastSide ? { side: breastSide } : {}),
-        ...(breastDuration ? { duration: Number(breastDuration) } : {}),
-      },
-      pump: {
-        ...(pumpSide ? { side: pumpSide } : {}),
-        ...(pumpVolume ? { volume: Number(pumpVolume) } : {}),
-      },
-    };
     try {
-      await onSaveDefaults(newDefaults);
+      await onSave({ defaults: localDefaults, enabledCategories: localEnabled });
       onChangeWhoAmI(localWhoAmI);
       onClose();
     } catch (err) {
@@ -94,99 +103,195 @@ export function SettingsPanel({
             />
           </label>
 
-          <h3>Default values</h3>
+          <h3>Categories &amp; default values</h3>
 
-          <div className="settings-group" data-type="diaper">
-            <span className="settings-group-label">
-              <DiaperIcon size={16} /> Diaper — kind
-            </span>
-            <SegmentedControl
-              options={[
-                { value: "wet", label: "Wet" },
-                { value: "dirty", label: "Dirty" },
-                { value: "both", label: "Both" },
-              ]}
-              value={diaperKind}
-              onChange={setDiaperKind}
-            />
-          </div>
+          {ENTRY_TYPES.map((type) => {
+            const d = getDefault(type);
+            const enabled = isCategoryEnabled(localEnabled, type);
+            const toggle = () => toggleCategory(type);
 
-          <div className="settings-group" data-type="bottle">
-            <span className="settings-group-label">
-              <BottleIcon size={16} /> Bottle — source
-            </span>
-            <SegmentedControl
-              options={[
-                { value: "formula", label: "Formula" },
-                { value: "pumped", label: "Pumped" },
-              ]}
-              value={bottleSource}
-              onChange={setBottleSource}
-            />
-          </div>
-          <label className="field">
-            <span className="settings-group-label">
-              <BottleIcon size={16} /> Bottle — volume (ml)
-            </span>
-            <input
-              type="number"
-              inputMode="numeric"
-              value={bottleVolume}
-              onChange={(e) => setBottleVolume(e.target.value)}
-            />
-          </label>
+            return (
+              <CategorySection key={type} type={type} enabled={enabled} onToggle={toggle}>
+                {type === "diaper" && (
+                  <div className="settings-group">
+                    <span className="settings-group-label">Kind</span>
+                    <SegmentedControl
+                      options={[
+                        { value: "wet", label: "Wet" },
+                        { value: "dirty", label: "Dirty" },
+                        { value: "both", label: "Both" },
+                      ]}
+                      value={(d.kind as string) ?? null}
+                      onChange={(v) => updateDefault(type, { kind: v })}
+                    />
+                  </div>
+                )}
 
-          <div className="settings-group" data-type="breast">
-            <span className="settings-group-label">
-              <BreastIcon size={16} /> Breast — side
-            </span>
-            <SegmentedControl
-              options={[
-                { value: "left", label: "Left" },
-                { value: "right", label: "Right" },
-                { value: "both", label: "Both" },
-              ]}
-              value={breastSide}
-              onChange={setBreastSide}
-            />
-          </div>
-          <label className="field">
-            <span className="settings-group-label">
-              <BreastIcon size={16} /> Breast — duration (min)
-            </span>
-            <input
-              type="number"
-              inputMode="numeric"
-              value={breastDuration}
-              onChange={(e) => setBreastDuration(e.target.value)}
-            />
-          </label>
+                {type === "bottle" && (
+                  <>
+                    <div className="settings-group">
+                      <span className="settings-group-label">Source</span>
+                      <SegmentedControl
+                        options={[
+                          { value: "formula", label: "Formula" },
+                          { value: "pumped", label: "Pumped" },
+                        ]}
+                        value={(d.source as string) ?? null}
+                        onChange={(v) => updateDefault(type, { source: v })}
+                      />
+                    </div>
+                    <label className="field">
+                      <span>Volume (ml)</span>
+                      <input
+                        type="number"
+                        inputMode="numeric"
+                        value={d.volume != null ? String(d.volume) : ""}
+                        onChange={(e) =>
+                          updateDefault(type, {
+                            volume: e.target.value ? Number(e.target.value) : null,
+                          })
+                        }
+                      />
+                    </label>
+                  </>
+                )}
 
-          <div className="settings-group" data-type="pump">
-            <span className="settings-group-label">
-              <PumpIcon size={16} /> Pump — side
-            </span>
-            <SegmentedControl
-              options={[
-                { value: "left", label: "Left" },
-                { value: "right", label: "Right" },
-                { value: "both", label: "Both" },
-              ]}
-              value={pumpSide}
-              onChange={setPumpSide}
-            />
-          </div>
-          <label className="field">
-            <span className="settings-group-label">
-              <PumpIcon size={16} /> Pump — volume (ml)
-            </span>
-            <input
-              type="number"
-              inputMode="numeric"
-              value={pumpVolume}
-              onChange={(e) => setPumpVolume(e.target.value)}
-            />
-          </label>
+                {type === "breast" && (
+                  <>
+                    <div className="settings-group">
+                      <span className="settings-group-label">Side</span>
+                      <SegmentedControl
+                        options={[
+                          { value: "left", label: "Left" },
+                          { value: "right", label: "Right" },
+                          { value: "both", label: "Both" },
+                        ]}
+                        value={(d.side as string) ?? null}
+                        onChange={(v) => updateDefault(type, { side: v })}
+                      />
+                    </div>
+                    <label className="field">
+                      <span>Duration (min)</span>
+                      <input
+                        type="number"
+                        inputMode="numeric"
+                        value={d.duration != null ? String(d.duration) : ""}
+                        onChange={(e) =>
+                          updateDefault(type, {
+                            duration: e.target.value ? Number(e.target.value) : null,
+                          })
+                        }
+                      />
+                    </label>
+                  </>
+                )}
+
+                {type === "solids" && (
+                  <>
+                    <label className="field">
+                      <span>Contents</span>
+                      <input
+                        type="text"
+                        value={(d.contents as string) ?? ""}
+                        onChange={(e) => updateDefault(type, { contents: e.target.value })}
+                      />
+                    </label>
+                    <label className="field">
+                      <span>Weight (g)</span>
+                      <input
+                        type="number"
+                        inputMode="numeric"
+                        value={d.weight != null ? String(d.weight) : ""}
+                        onChange={(e) =>
+                          updateDefault(type, {
+                            weight: e.target.value ? Number(e.target.value) : null,
+                          })
+                        }
+                      />
+                    </label>
+                  </>
+                )}
+
+                {type === "pump" && (
+                  <>
+                    <div className="settings-group">
+                      <span className="settings-group-label">Side</span>
+                      <SegmentedControl
+                        options={[
+                          { value: "left", label: "Left" },
+                          { value: "right", label: "Right" },
+                          { value: "both", label: "Both" },
+                        ]}
+                        value={(d.side as string) ?? null}
+                        onChange={(v) => updateDefault(type, { side: v })}
+                      />
+                    </div>
+                    <label className="field">
+                      <span>Volume (ml)</span>
+                      <input
+                        type="number"
+                        inputMode="numeric"
+                        value={d.volume != null ? String(d.volume) : ""}
+                        onChange={(e) =>
+                          updateDefault(type, {
+                            volume: e.target.value ? Number(e.target.value) : null,
+                          })
+                        }
+                      />
+                    </label>
+                  </>
+                )}
+
+                {type === "sleep" && (
+                  <label className="field">
+                    <span>Duration (min)</span>
+                    <input
+                      type="number"
+                      inputMode="numeric"
+                      value={d.duration != null ? String(d.duration) : ""}
+                      onChange={(e) =>
+                        updateDefault(type, {
+                          duration: e.target.value ? Number(e.target.value) : null,
+                        })
+                      }
+                    />
+                  </label>
+                )}
+
+                {type === "meds" && (
+                  <>
+                    <label className="field">
+                      <span>Name</span>
+                      <input
+                        type="text"
+                        value={(d.name as string) ?? ""}
+                        onChange={(e) => updateDefault(type, { name: e.target.value })}
+                      />
+                    </label>
+                    <label className="field">
+                      <span>Amount</span>
+                      <input
+                        type="text"
+                        value={(d.amount as string) ?? ""}
+                        onChange={(e) => updateDefault(type, { amount: e.target.value })}
+                      />
+                    </label>
+                  </>
+                )}
+
+                {type === "misc" && (
+                  <label className="field">
+                    <span>Notes</span>
+                    <input
+                      type="text"
+                      value={(d.notes as string) ?? ""}
+                      onChange={(e) => updateDefault(type, { notes: e.target.value })}
+                    />
+                  </label>
+                )}
+              </CategorySection>
+            );
+          })}
 
           <div className="settings-group">
             <span className="settings-group-label">Theme</span>

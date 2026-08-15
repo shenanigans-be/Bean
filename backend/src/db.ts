@@ -30,6 +30,6 @@ db.exec(`
 const existing = db.prepare("SELECT id FROM settings WHERE id = 1").get();
 if (!existing) {
   db.prepare("INSERT INTO settings (id, defaults) VALUES (1, ?)").run(
-    JSON.stringify({})
+    JSON.stringify({ defaults: {}, enabledCategories: {} })
   );
 }

@@ -6,13 +6,15 @@ import { EntryForm } from "./components/EntryForm";
 import { EntryTypeButtons } from "./components/EntryTypeButtons";
 import { Log } from "./components/Log";
 import { SettingsPanel } from "./components/SettingsPanel";
-import type { Defaults, Entry, EntryType, NewEntry } from "./types";
+import { ENTRY_TYPES, isCategoryEnabled, type AppSettings, type Entry, type EntryType, type NewEntry } from "./types";
 import { getTheme, setTheme as persistTheme, type Theme } from "./utils/theme";
 import { getWhoAmI, setWhoAmI as persistWhoAmI } from "./utils/whoami";
 
+const EMPTY_SETTINGS: AppSettings = { defaults: {}, enabledCategories: {} };
+
 export default function App() {
   const [entries, setEntries] = useState<Entry[]>([]);
-  const [defaults, setDefaults] = useState<Defaults>({});
+  const [settings, setSettings] = useState<AppSettings>(EMPTY_SETTINGS);
   const [activeType, setActiveType] = useState<EntryType | null>(null);
   const [editingEntry, setEditingEntry] = useState<Entry | null>(null);
   const [whoAmI, setWhoAmIState] = useState(getWhoAmI());
@@ -23,9 +25,12 @@ export default function App() {
 
   useEffect(() => {
     Promise.all([api.getEntries(), api.getSettings()])
-      .then(([entriesRes, defaultsRes]) => {
+      .then(([entriesRes, settingsRes]) => {
         setEntries(entriesRes);
-        setDefaults(defaultsRes);
+        setSettings({
+          defaults: settingsRes.defaults ?? {},
+          enabledCategories: settingsRes.enabledCategories ?? {},
+        });
       })
       .catch((err) => setError(err instanceof Error ? err.message : "Failed to load"))
       .finally(() => setLoading(false));
@@ -34,6 +39,8 @@ export default function App() {
   useEffect(() => {
     document.documentElement.dataset.theme = theme;
   }, [theme]);
+
+  const visibleTypes = ENTRY_TYPES.filter((t) => isCategoryEnabled(settings.enabledCategories, t));
 
   async function refreshEntries() {
     setEntries(await api.getEntries());
@@ -72,9 +79,9 @@ export default function App() {
     await handleDelete(id);
   }
 
-  async function handleSaveDefaults(newDefaults: Defaults) {
-    const saved = await api.updateSettings(newDefaults);
-    setDefaults(saved);
+  async function handleSaveSettings(newSettings: AppSettings) {
+    const saved = await api.updateSettings(newSettings);
+    setSettings(saved);
   }
 
   function handleChangeWhoAmI(name: string) {
@@ -104,6 +111,7 @@ export default function App() {
       </header>
 
       <EntryTypeButtons
+        types={visibleTypes}
         active={activeType}
         onSelect={(type) => setActiveType(activeType === type ? null : type)}
       />
@@ -111,7 +119,7 @@ export default function App() {
       {activeType && (
         <EntryForm
           type={activeType}
-          defaults={defaults}
+          defaults={settings.defaults}
           whoAmI={whoAmI}
           onSubmit={handleCreate}
           onCancel={() => setActiveType(null)}
@@ -123,13 +131,13 @@ export default function App() {
       {loading ? (
         <p className="log-empty">Loading…</p>
       ) : (
-        <Log entries={entries} onSelect={setEditingEntry} />
+        <Log entries={entries} types={visibleTypes} onSelect={setEditingEntry} />
       )}
 
       {settingsOpen && (
         <SettingsPanel
-          defaults={defaults}
-          onSaveDefaults={handleSaveDefaults}
+          settings={settings}
+          onSave={handleSaveSettings}
           whoAmI={whoAmI}
           onChangeWhoAmI={handleChangeWhoAmI}
           theme={theme}
@@ -146,7 +154,7 @@ export default function App() {
             </h2>
             <EntryForm
               type={editingEntry.type}
-              defaults={defaults}
+              defaults={settings.defaults}
               whoAmI={whoAmI}
               entry={editingEntry}
               onSubmit={handleUpdate}

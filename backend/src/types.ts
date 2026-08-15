@@ -1,4 +1,13 @@
-export const ENTRY_TYPES = ["diaper", "bottle", "breast", "pump"] as const;
+export const ENTRY_TYPES = [
+  "diaper",
+  "bottle",
+  "breast",
+  "solids",
+  "pump",
+  "sleep",
+  "meds",
+  "misc",
+] as const;
 export type EntryType = (typeof ENTRY_TYPES)[number];
 
 export interface EntryRow {

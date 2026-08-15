@@ -1,5 +1,5 @@
 import { useState, type FormEvent } from "react";
-import { ENTRY_META } from "../entryMeta";
+import { categoryVars, ENTRY_META } from "../entryMeta";
 import type {
   BottleSource,
   Defaults,
@@ -40,6 +40,10 @@ export function EntryForm({
   const [volume, setVolume] = useState(initial?.volume != null ? String(initial.volume) : "");
   const [duration, setDuration] = useState(initial?.duration != null ? String(initial.duration) : "");
   const [notes, setNotes] = useState((initial?.notes as string) ?? "");
+  const [contents, setContents] = useState((initial?.contents as string) ?? "");
+  const [weight, setWeight] = useState(initial?.weight != null ? String(initial.weight) : "");
+  const [medsName, setMedsName] = useState((initial?.name as string) ?? "");
+  const [medsAmount, setMedsAmount] = useState((initial?.amount as string) ?? "");
   const [error, setError] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
 
@@ -53,6 +57,14 @@ export function EntryForm({
         return { duration: duration ? Number(duration) : null, side, notes };
       case "pump":
         return { side, volume: volume ? Number(volume) : null };
+      case "solids":
+        return { contents, weight: weight ? Number(weight) : null };
+      case "sleep":
+        return { duration: duration ? Number(duration) : null };
+      case "meds":
+        return { name: medsName, amount: medsAmount };
+      case "misc":
+        return { notes };
     }
   }
 
@@ -80,7 +92,7 @@ export function EntryForm({
   }
 
   return (
-    <form className="entry-form" data-type={type} onSubmit={handleSubmit}>
+    <form className="entry-form" data-type={type} style={categoryVars(type)} onSubmit={handleSubmit}>
       <label className="field">
         <span>Time</span>
         <input
@@ -190,6 +202,60 @@ export function EntryForm({
             />
           </label>
         </>
+      )}
+
+      {type === "solids" && (
+        <>
+          <label className="field">
+            <span>Contents</span>
+            <input type="text" value={contents} onChange={(e) => setContents(e.target.value)} />
+          </label>
+          <label className="field">
+            <span>Weight (g)</span>
+            <input
+              type="number"
+              inputMode="numeric"
+              value={weight}
+              onChange={(e) => setWeight(e.target.value)}
+            />
+          </label>
+        </>
+      )}
+
+      {type === "sleep" && (
+        <label className="field">
+          <span>Duration (min)</span>
+          <input
+            type="number"
+            inputMode="numeric"
+            value={duration}
+            onChange={(e) => setDuration(e.target.value)}
+          />
+        </label>
+      )}
+
+      {type === "meds" && (
+        <>
+          <label className="field">
+            <span>Name</span>
+            <input type="text" value={medsName} onChange={(e) => setMedsName(e.target.value)} />
+          </label>
+          <label className="field">
+            <span>Amount</span>
+            <input
+              type="text"
+              value={medsAmount}
+              onChange={(e) => setMedsAmount(e.target.value)}
+            />
+          </label>
+        </>
+      )}
+
+      {type === "misc" && (
+        <label className="field">
+          <span>Notes</span>
+          <input type="text" value={notes} onChange={(e) => setNotes(e.target.value)} />
+        </label>
       )}
 
       {error && <p className="form-error">{error}</p>}

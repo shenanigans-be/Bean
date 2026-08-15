@@ -26,6 +26,22 @@ export function summarizeEntry(entry: Entry): string {
       if (data.volume) parts.push(`${data.volume}ml`);
       return parts.join(" · ");
     }
+    case "solids": {
+      const parts = [];
+      if (data.contents) parts.push(String(data.contents));
+      if (data.weight) parts.push(`${data.weight}g`);
+      return parts.join(" · ");
+    }
+    case "sleep":
+      return data.duration ? `${data.duration} min` : "";
+    case "meds": {
+      const parts = [];
+      if (data.name) parts.push(String(data.name));
+      if (data.amount) parts.push(String(data.amount));
+      return parts.join(" · ");
+    }
+    case "misc":
+      return String(data.notes ?? "");
     default:
       return "";
   }

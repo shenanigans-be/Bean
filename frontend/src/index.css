@@ -16,19 +16,26 @@
   --diaper-fill: #8a5a12;
   --diaper-on-accent: #f5f5f5;
 
-  /* bottle: cyan, lighter variation (same family as breast) */
+  /* bottle: cyan, lightest of the feeding trio (bottle/breast/solids) */
   --bottle-bg: #e3f8fa;
   --bottle-bg-strong: #b0e9ef;
   --bottle-accent: #2ec8d9;
   --bottle-fill: #17707d;
   --bottle-on-accent: #f5f5f5;
 
-  /* breast: cyan, deeper variation (same family as bottle) */
+  /* breast: cyan, deeper variation */
   --breast-bg: #c9eef2;
   --breast-bg-strong: #8fdce3;
   --breast-accent: #24afc0;
   --breast-fill: #135f6c;
   --breast-on-accent: #f5f5f5;
+
+  /* solids: blue, same cool family as bottle/breast */
+  --solids-bg: #d9e6f1;
+  --solids-bg-strong: #b5d1eb;
+  --solids-accent: #3d8fd9;
+  --solids-fill: #285d8d;
+  --solids-on-accent: #f5f5f5;
 
   /* pump: pink/red */
   --pump-bg: #fce2e7;
@@ -36,6 +43,27 @@
   --pump-accent: #f0516f;
   --pump-fill: #a6294a;
   --pump-on-accent: #f5f5f5;
+
+  /* sleep: violet */
+  --sleep-bg: #e5e1f1;
+  --sleep-bg-strong: #d0c6eb;
+  --sleep-accent: #8b6fd9;
+  --sleep-fill: #5a488d;
+  --sleep-on-accent: #f5f5f5;
+
+  /* meds: green */
+  --meds-bg: #dcebe3;
+  --meds-bg-strong: #baddcb;
+  --meds-accent: #4caf7d;
+  --meds-fill: #317251;
+  --meds-on-accent: #f5f5f5;
+
+  /* misc: slate */
+  --misc-bg: #e5e6e9;
+  --misc-bg-strong: #d0d3d9;
+  --misc-accent: #8a93a6;
+  --misc-fill: #5a606c;
+  --misc-on-accent: #f5f5f5;
 }
 
 @media (prefers-color-scheme: dark) {
@@ -68,11 +96,35 @@
     --breast-fill: #4dd8e5;
     --breast-on-accent: #143a40;
 
+    --solids-bg: #1b495c;
+    --solids-bg-strong: #245a7a;
+    --solids-accent: #62a3df;
+    --solids-fill: #62a3df;
+    --solids-on-accent: #143a40;
+
     --pump-bg: #3d1b22;
     --pump-bg-strong: #4f222b;
     --pump-accent: #f0516f;
     --pump-fill: #f0516f;
     --pump-on-accent: #143a40;
+
+    --sleep-bg: #29445c;
+    --sleep-bg-strong: #414e7a;
+    --sleep-accent: #a691e0;
+    --sleep-fill: #a691e0;
+    --sleep-on-accent: #143a40;
+
+    --meds-bg: #1e4f4b;
+    --meds-bg-strong: #296657;
+    --meds-accent: #65ba8f;
+    --meds-fill: #65ba8f;
+    --meds-on-accent: #143a40;
+
+    --misc-bg: #294a52;
+    --misc-bg-strong: #415c67;
+    --misc-accent: #9aa2b2;
+    --misc-fill: #9aa2b2;
+    --misc-on-accent: #143a40;
   }
 }
 
@@ -105,11 +157,35 @@
   --breast-fill: #4dd8e5;
   --breast-on-accent: #143a40;
 
+  --solids-bg: #1b495c;
+  --solids-bg-strong: #245a7a;
+  --solids-accent: #62a3df;
+  --solids-fill: #62a3df;
+  --solids-on-accent: #143a40;
+
   --pump-bg: #3d1b22;
   --pump-bg-strong: #4f222b;
   --pump-accent: #f0516f;
   --pump-fill: #f0516f;
   --pump-on-accent: #143a40;
+
+  --sleep-bg: #29445c;
+  --sleep-bg-strong: #414e7a;
+  --sleep-accent: #a691e0;
+  --sleep-fill: #a691e0;
+  --sleep-on-accent: #143a40;
+
+  --meds-bg: #1e4f4b;
+  --meds-bg-strong: #296657;
+  --meds-accent: #65ba8f;
+  --meds-fill: #65ba8f;
+  --meds-on-accent: #143a40;
+
+  --misc-bg: #294a52;
+  --misc-bg-strong: #415c67;
+  --misc-accent: #9aa2b2;
+  --misc-fill: #9aa2b2;
+  --misc-on-accent: #143a40;
 }
 
 * {
@@ -159,13 +235,20 @@ body {
 }
 
 .entry-type-row {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
+  display: flex;
   gap: 0.5rem;
-  margin-bottom: 1rem;
+  overflow-x: auto;
+  margin: 0 -1rem 1rem;
+  padding: 0 1rem 0.25rem;
+  scrollbar-width: none;
+}
+
+.entry-type-row::-webkit-scrollbar {
+  display: none;
 }
 
 .entry-type-btn {
+  flex: 0 0 76px;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -173,30 +256,20 @@ body {
   padding: 0.75rem 0.25rem;
   border-radius: 12px;
   border: 1px solid transparent;
-  background: var(--surface);
+  background: var(--cat-bg);
   color: var(--text);
   cursor: pointer;
   font-size: 0.75rem;
 }
 
-.entry-type-btn[data-type="diaper"] { background: var(--diaper-bg); }
-.entry-type-btn[data-type="bottle"] { background: var(--bottle-bg); }
-.entry-type-btn[data-type="breast"] { background: var(--breast-bg); }
-.entry-type-btn[data-type="pump"] { background: var(--pump-bg); }
-
-.entry-type-btn-active[data-type="diaper"] { background: var(--diaper-bg-strong); border-color: var(--diaper-accent); }
-.entry-type-btn-active[data-type="bottle"] { background: var(--bottle-bg-strong); border-color: var(--bottle-accent); }
-.entry-type-btn-active[data-type="breast"] { background: var(--breast-bg-strong); border-color: var(--breast-accent); }
-.entry-type-btn-active[data-type="pump"] { background: var(--pump-bg-strong); border-color: var(--pump-accent); }
-
-.entry-type-icon {
-  color: var(--text);
+.entry-type-btn-active {
+  background: var(--cat-bg-strong);
+  border-color: var(--cat-accent);
 }
 
-.entry-type-btn[data-type="diaper"] .entry-type-icon { color: var(--diaper-accent); }
-.entry-type-btn[data-type="bottle"] .entry-type-icon { color: var(--bottle-accent); }
-.entry-type-btn[data-type="breast"] .entry-type-icon { color: var(--breast-accent); }
-.entry-type-btn[data-type="pump"] .entry-type-icon { color: var(--pump-accent); }
+.entry-type-icon {
+  color: var(--cat-accent);
+}
 
 .entry-form {
   display: flex;
@@ -256,32 +329,11 @@ body {
   font-weight: 600;
 }
 
-.entry-form[data-type="diaper"] .segment-active,
-.settings-group[data-type="diaper"] .segment-active {
-  border-color: var(--diaper-fill);
-  background: var(--diaper-fill);
-  color: var(--diaper-on-accent);
-}
-
-.entry-form[data-type="bottle"] .segment-active,
-.settings-group[data-type="bottle"] .segment-active {
-  border-color: var(--bottle-fill);
-  background: var(--bottle-fill);
-  color: var(--bottle-on-accent);
-}
-
-.entry-form[data-type="breast"] .segment-active,
-.settings-group[data-type="breast"] .segment-active {
-  border-color: var(--breast-fill);
-  background: var(--breast-fill);
-  color: var(--breast-on-accent);
-}
-
-.entry-form[data-type="pump"] .segment-active,
-.settings-group[data-type="pump"] .segment-active {
-  border-color: var(--pump-fill);
-  background: var(--pump-fill);
-  color: var(--pump-on-accent);
+.entry-form .segment-active,
+.settings-group .segment-active {
+  border-color: var(--cat-fill, var(--accent));
+  background: var(--cat-fill, var(--accent));
+  color: var(--cat-on-accent, var(--accent-text));
 }
 
 .form-error {
@@ -322,28 +374,10 @@ body {
   opacity: 0.6;
 }
 
-.entry-form[data-type="diaper"] .btn-primary {
-  background: var(--diaper-fill);
-  color: var(--diaper-on-accent);
-  border-color: var(--diaper-fill);
-}
-
-.entry-form[data-type="bottle"] .btn-primary {
-  background: var(--bottle-fill);
-  color: var(--bottle-on-accent);
-  border-color: var(--bottle-fill);
-}
-
-.entry-form[data-type="breast"] .btn-primary {
-  background: var(--breast-fill);
-  color: var(--breast-on-accent);
-  border-color: var(--breast-fill);
-}
-
-.entry-form[data-type="pump"] .btn-primary {
-  background: var(--pump-fill);
-  color: var(--pump-on-accent);
-  border-color: var(--pump-fill);
+.entry-form .btn-primary {
+  background: var(--cat-fill);
+  color: var(--cat-on-accent);
+  border-color: var(--cat-fill);
 }
 
 .btn-secondary {
@@ -355,6 +389,66 @@ body {
   background: transparent;
   color: var(--danger);
   border-color: var(--danger);
+}
+
+.log-toolbar {
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: 0.75rem;
+}
+
+.filter-toggle-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.4rem 0.75rem;
+  border-radius: 999px;
+  border: 1px solid var(--border);
+  background: var(--surface);
+  color: var(--text-muted);
+  font-size: 0.85rem;
+  cursor: pointer;
+}
+
+.filter-toggle-btn svg {
+  width: 16px;
+  height: 16px;
+}
+
+.filter-toggle-btn-active {
+  border-color: var(--accent);
+  color: var(--text);
+}
+
+.filter-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  margin-bottom: 1rem;
+}
+
+.filter-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  padding: 0.35rem 0.65rem;
+  border-radius: 999px;
+  border: 1px solid var(--border);
+  background: var(--surface);
+  color: var(--text-muted);
+  font-size: 0.8rem;
+  cursor: pointer;
+}
+
+.filter-chip svg {
+  width: 14px;
+  height: 14px;
+}
+
+.filter-chip-active {
+  background: var(--cat-bg-strong);
+  border-color: var(--cat-accent);
+  color: var(--text);
 }
 
 .log-empty {
@@ -392,8 +486,8 @@ body {
   padding: 0.6rem 0.75rem;
   border-radius: 10px;
   border: 1px solid var(--border);
-  border-left: 4px solid var(--border);
-  background: var(--surface);
+  border-left: 4px solid var(--cat-accent);
+  background: var(--cat-bg);
   font: inherit;
   color: inherit;
   text-align: left;
@@ -404,20 +498,10 @@ body {
   filter: brightness(0.98);
 }
 
-.log-entry[data-type="diaper"] { background: var(--diaper-bg); border-left-color: var(--diaper-accent); }
-.log-entry[data-type="bottle"] { background: var(--bottle-bg); border-left-color: var(--bottle-accent); }
-.log-entry[data-type="breast"] { background: var(--breast-bg); border-left-color: var(--breast-accent); }
-.log-entry[data-type="pump"] { background: var(--pump-bg); border-left-color: var(--pump-accent); }
-
 .log-entry-icon {
   flex-shrink: 0;
-  color: var(--text);
+  color: var(--cat-accent);
 }
-
-.log-entry[data-type="diaper"] .log-entry-icon { color: var(--diaper-accent); }
-.log-entry[data-type="bottle"] .log-entry-icon { color: var(--bottle-accent); }
-.log-entry[data-type="breast"] .log-entry-icon { color: var(--breast-accent); }
-.log-entry[data-type="pump"] .log-entry-icon { color: var(--pump-accent); }
 
 .log-entry-time {
   font-variant-numeric: tabular-nums;
@@ -430,6 +514,12 @@ body {
   flex: 1;
   font-size: 0.95rem;
   color: var(--text);
+}
+
+.load-more {
+  display: block;
+  width: 100%;
+  margin-top: 0.25rem;
 }
 
 .drawer-overlay {
@@ -488,4 +578,47 @@ body {
   gap: 0.35rem;
   font-size: 0.85rem;
   color: var(--text-muted);
+}
+
+.settings-category {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+  padding: 0.75rem;
+  border-radius: 10px;
+  background: var(--cat-bg);
+}
+
+.settings-category-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+}
+
+.settings-category-header .settings-group-label {
+  color: var(--text);
+  font-weight: 600;
+}
+
+.category-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 0.8rem;
+  color: var(--text-muted);
+  cursor: pointer;
+}
+
+.category-toggle input {
+  width: 1.1rem;
+  height: 1.1rem;
+  accent-color: var(--cat-fill);
+  cursor: pointer;
+}
+
+.settings-category-fields {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
 }

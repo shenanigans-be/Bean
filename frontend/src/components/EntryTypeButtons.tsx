@@ -1,15 +1,16 @@
-import { ENTRY_META } from "../entryMeta";
-import { ENTRY_TYPES, type EntryType } from "../types";
+import { categoryVars, ENTRY_META } from "../entryMeta";
+import type { EntryType } from "../types";
 
 interface EntryTypeButtonsProps {
+  types: EntryType[];
   active: EntryType | null;
   onSelect: (type: EntryType) => void;
 }
 
-export function EntryTypeButtons({ active, onSelect }: EntryTypeButtonsProps) {
+export function EntryTypeButtons({ types, active, onSelect }: EntryTypeButtonsProps) {
   return (
     <div className="entry-type-row">
-      {ENTRY_TYPES.map((type) => {
+      {types.map((type) => {
         const meta = ENTRY_META[type];
         const Icon = meta.icon;
         return (
@@ -17,6 +18,7 @@ export function EntryTypeButtons({ active, onSelect }: EntryTypeButtonsProps) {
             key={type}
             type="button"
             data-type={type}
+            style={categoryVars(type)}
             className={type === active ? "entry-type-btn entry-type-btn-active" : "entry-type-btn"}
             onClick={() => onSelect(type)}
           >

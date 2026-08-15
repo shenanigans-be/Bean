@@ -1,4 +1,4 @@
-import type { Defaults, Entry, NewEntry } from "./types";
+import type { AppSettings, Entry, NewEntry } from "./types";
 
 const BASE = "/api";
 
@@ -29,10 +29,10 @@ export const api = {
     }),
   deleteEntry: (id: number) =>
     request<void>(`/entries/${id}`, { method: "DELETE" }),
-  getSettings: () => request<Defaults>("/settings"),
-  updateSettings: (defaults: Defaults) =>
-    request<Defaults>("/settings", {
+  getSettings: () => request<AppSettings>("/settings"),
+  updateSettings: (settings: AppSettings) =>
+    request<AppSettings>("/settings", {
       method: "PUT",
-      body: JSON.stringify(defaults),
+      body: JSON.stringify(settings),
     }),
 };

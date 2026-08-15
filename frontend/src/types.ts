@@ -1,4 +1,13 @@
-export const ENTRY_TYPES = ["diaper", "bottle", "breast", "pump"] as const;
+export const ENTRY_TYPES = [
+  "diaper",
+  "bottle",
+  "breast",
+  "solids",
+  "pump",
+  "sleep",
+  "meds",
+  "misc",
+] as const;
 export type EntryType = (typeof ENTRY_TYPES)[number];
 
 export type DiaperKind = "wet" | "dirty" | "both";
@@ -26,7 +35,33 @@ export interface PumpData {
   volume: number | null;
 }
 
-export type EntryData = DiaperData | BottleData | BreastData | PumpData;
+export interface SolidsData {
+  contents: string;
+  weight: number | null;
+}
+
+export interface SleepData {
+  duration: number | null;
+}
+
+export interface MedsData {
+  name: string;
+  amount: string;
+}
+
+export interface MiscData {
+  notes: string;
+}
+
+export type EntryData =
+  | DiaperData
+  | BottleData
+  | BreastData
+  | PumpData
+  | SolidsData
+  | SleepData
+  | MedsData
+  | MiscData;
 
 export interface Entry {
   id: number;
@@ -49,4 +84,19 @@ export type Defaults = Partial<{
   bottle: Partial<BottleData>;
   breast: Partial<BreastData>;
   pump: Partial<PumpData>;
+  solids: Partial<SolidsData>;
+  sleep: Partial<SleepData>;
+  meds: Partial<MedsData>;
+  misc: Partial<MiscData>;
 }>;
+
+export type EnabledCategories = Partial<Record<EntryType, boolean>>;
+
+export interface AppSettings {
+  defaults: Defaults;
+  enabledCategories: EnabledCategories;
+}
+
+export function isCategoryEnabled(enabled: EnabledCategories, type: EntryType): boolean {
+  return enabled[type] !== false;
+}

@@ -1,10 +1,15 @@
-import { ENTRY_META } from "../entryMeta";
-import type { Entry } from "../types";
+import { IconFilter } from "@tabler/icons-react";
+import { useState } from "react";
+import { categoryVars, ENTRY_META } from "../entryMeta";
+import type { Entry, EntryType } from "../types";
 import { dayKeyOf, formatDayHeading, timeOf } from "../utils/datetime";
 import { summarizeEntry } from "../utils/entrySummary";
 
+const DAYS_PER_PAGE = 2;
+
 interface LogProps {
   entries: Entry[];
+  types: EntryType[];
   onSelect: (entry: Entry) => void;
 }
 
@@ -27,39 +32,107 @@ function groupByDay(entries: Entry[]): DayGroup[] {
   return groups;
 }
 
-export function Log({ entries, onSelect }: LogProps) {
+export function Log({ entries, types, onSelect }: LogProps) {
+  const [filterOpen, setFilterOpen] = useState(false);
+  const [activeFilter, setActiveFilter] = useState<Set<EntryType>>(new Set());
+  const [visibleDays, setVisibleDays] = useState(DAYS_PER_PAGE);
+
+  function toggleFilter(type: EntryType) {
+    setActiveFilter((prev) => {
+      const next = new Set(prev);
+      if (next.has(type)) next.delete(type);
+      else next.add(type);
+      return next;
+    });
+    setVisibleDays(DAYS_PER_PAGE);
+  }
+
   if (entries.length === 0) {
     return <p className="log-empty">No entries yet.</p>;
   }
 
-  const groups = groupByDay(entries);
+  const filtered =
+    activeFilter.size === 0 ? entries : entries.filter((e) => activeFilter.has(e.type));
+  const groups = groupByDay(filtered);
+  const visibleGroups = groups.slice(0, visibleDays);
+  const hasMore = groups.length > visibleDays;
 
   return (
     <div className="log">
-      {groups.map((group) => (
-        <section key={group.dayKey} className="log-day">
-          <h2 className="log-day-heading">{formatDayHeading(group.dayKey)}</h2>
-          <ul className="log-entries">
-            {group.entries.map((entry) => {
-              const Icon = ENTRY_META[entry.type].icon;
-              return (
-                <li key={entry.id}>
-                  <button
-                    type="button"
-                    className="log-entry"
-                    data-type={entry.type}
-                    onClick={() => onSelect(entry)}
-                  >
-                    <Icon className="log-entry-icon" size={20} />
-                    <span className="log-entry-time">{timeOf(entry.occurredAt)}</span>
-                    <span className="log-entry-summary">{summarizeEntry(entry)}</span>
-                  </button>
-                </li>
-              );
-            })}
-          </ul>
-        </section>
-      ))}
+      <div className="log-toolbar">
+        <button
+          type="button"
+          className={
+            filterOpen || activeFilter.size > 0
+              ? "filter-toggle-btn filter-toggle-btn-active"
+              : "filter-toggle-btn"
+          }
+          onClick={() => setFilterOpen((open) => !open)}
+        >
+          <IconFilter /> Filter
+        </button>
+      </div>
+
+      {filterOpen && (
+        <div className="filter-chips">
+          {types.map((type) => {
+            const meta = ENTRY_META[type];
+            const Icon = meta.icon;
+            const active = activeFilter.has(type);
+            return (
+              <button
+                key={type}
+                type="button"
+                style={categoryVars(type)}
+                className={active ? "filter-chip filter-chip-active" : "filter-chip"}
+                onClick={() => toggleFilter(type)}
+              >
+                <Icon /> {meta.label}
+              </button>
+            );
+          })}
+        </div>
+      )}
+
+      {visibleGroups.length === 0 ? (
+        <p className="log-empty">No entries match this filter.</p>
+      ) : (
+        visibleGroups.map((group) => (
+          <section key={group.dayKey} className="log-day">
+            <h2 className="log-day-heading">{formatDayHeading(group.dayKey)}</h2>
+            <ul className="log-entries">
+              {group.entries.map((entry) => {
+                const Icon = ENTRY_META[entry.type].icon;
+                return (
+                  <li key={entry.id}>
+                    <button
+                      type="button"
+                      className="log-entry"
+                      data-type={entry.type}
+                      style={categoryVars(entry.type)}
+                      onClick={() => onSelect(entry)}
+                    >
+                      <Icon className="log-entry-icon" size={20} />
+                      <span className="log-entry-time">{timeOf(entry.occurredAt)}</span>
+                      <span className="log-entry-summary">{summarizeEntry(entry)}</span>
+                    </button>
+                  </li>
+                );
+              })}
+            </ul>
+          </section>
+        ))
+      )}
+
+      {hasMore && (
+        <button
+          type="button"
+          className="btn-secondary load-more"
+          onClick={() => setVisibleDays((d) => d + DAYS_PER_PAGE)}
+        >
+          Load more
+        </button>
+      )}
     </div>
   );
 }
