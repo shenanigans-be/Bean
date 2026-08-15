@@ -9,29 +9,33 @@
   --danger: #b3441e;
   color-scheme: light;
 
-  /* diaper: amber */
+  /* diaper: amber. fill is a darker shade so white button text stays legible */
   --diaper-bg: #fdf1da;
   --diaper-bg-strong: #f9dda0;
   --diaper-accent: #f2aa1b;
-  --diaper-on-accent: #143a40;
+  --diaper-fill: #8a5a12;
+  --diaper-on-accent: #f5f5f5;
 
   /* bottle: cyan, lighter variation (same family as breast) */
   --bottle-bg: #e3f8fa;
   --bottle-bg-strong: #b0e9ef;
   --bottle-accent: #2ec8d9;
-  --bottle-on-accent: #143a40;
+  --bottle-fill: #17707d;
+  --bottle-on-accent: #f5f5f5;
 
   /* breast: cyan, deeper variation (same family as bottle) */
   --breast-bg: #c9eef2;
   --breast-bg-strong: #8fdce3;
   --breast-accent: #24afc0;
-  --breast-on-accent: #143a40;
+  --breast-fill: #135f6c;
+  --breast-on-accent: #f5f5f5;
 
   /* pump: pink/red */
   --pump-bg: #fce2e7;
   --pump-bg-strong: #f7b8c4;
   --pump-accent: #f0516f;
-  --pump-on-accent: #143a40;
+  --pump-fill: #a6294a;
+  --pump-on-accent: #f5f5f5;
 }
 
 @media (prefers-color-scheme: dark) {
@@ -49,21 +53,25 @@
     --diaper-bg: #3d2f16;
     --diaper-bg-strong: #4f3d1c;
     --diaper-accent: #f2aa1b;
+    --diaper-fill: #f2aa1b;
     --diaper-on-accent: #143a40;
 
     --bottle-bg: #113238;
     --bottle-bg-strong: #154048;
     --bottle-accent: #2ec8d9;
+    --bottle-fill: #2ec8d9;
     --bottle-on-accent: #143a40;
 
     --breast-bg: #154048;
     --breast-bg-strong: #1b4f58;
     --breast-accent: #4dd8e5;
+    --breast-fill: #4dd8e5;
     --breast-on-accent: #143a40;
 
     --pump-bg: #3d1b22;
     --pump-bg-strong: #4f222b;
     --pump-accent: #f0516f;
+    --pump-fill: #f0516f;
     --pump-on-accent: #143a40;
   }
 }
@@ -82,21 +90,25 @@
   --diaper-bg: #3d2f16;
   --diaper-bg-strong: #4f3d1c;
   --diaper-accent: #f2aa1b;
+  --diaper-fill: #f2aa1b;
   --diaper-on-accent: #143a40;
 
   --bottle-bg: #113238;
   --bottle-bg-strong: #154048;
   --bottle-accent: #2ec8d9;
+  --bottle-fill: #2ec8d9;
   --bottle-on-accent: #143a40;
 
   --breast-bg: #154048;
   --breast-bg-strong: #1b4f58;
   --breast-accent: #4dd8e5;
+  --breast-fill: #4dd8e5;
   --breast-on-accent: #143a40;
 
   --pump-bg: #3d1b22;
   --pump-bg-strong: #4f222b;
   --pump-accent: #f0516f;
+  --pump-fill: #f0516f;
   --pump-on-accent: #143a40;
 }
 
@@ -112,7 +124,7 @@ body {
   margin: 0;
   background: var(--bg);
   color: var(--text);
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  font-family: "Nunito Sans Variable", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
   -webkit-tap-highlight-color: transparent;
 }
 
@@ -238,29 +250,29 @@ body {
 
 .entry-form[data-type="diaper"] .segment-active,
 .settings-group[data-type="diaper"] .segment-active {
-  border-color: var(--diaper-accent);
-  background: var(--diaper-accent);
+  border-color: var(--diaper-fill);
+  background: var(--diaper-fill);
   color: var(--diaper-on-accent);
 }
 
 .entry-form[data-type="bottle"] .segment-active,
 .settings-group[data-type="bottle"] .segment-active {
-  border-color: var(--bottle-accent);
-  background: var(--bottle-accent);
+  border-color: var(--bottle-fill);
+  background: var(--bottle-fill);
   color: var(--bottle-on-accent);
 }
 
 .entry-form[data-type="breast"] .segment-active,
 .settings-group[data-type="breast"] .segment-active {
-  border-color: var(--breast-accent);
-  background: var(--breast-accent);
+  border-color: var(--breast-fill);
+  background: var(--breast-fill);
   color: var(--breast-on-accent);
 }
 
 .entry-form[data-type="pump"] .segment-active,
 .settings-group[data-type="pump"] .segment-active {
-  border-color: var(--pump-accent);
-  background: var(--pump-accent);
+  border-color: var(--pump-fill);
+  background: var(--pump-fill);
   color: var(--pump-on-accent);
 }
 
@@ -303,27 +315,27 @@ body {
 }
 
 .entry-form[data-type="diaper"] .btn-primary {
-  background: var(--diaper-accent);
+  background: var(--diaper-fill);
   color: var(--diaper-on-accent);
-  border-color: var(--diaper-accent);
+  border-color: var(--diaper-fill);
 }
 
 .entry-form[data-type="bottle"] .btn-primary {
-  background: var(--bottle-accent);
+  background: var(--bottle-fill);
   color: var(--bottle-on-accent);
-  border-color: var(--bottle-accent);
+  border-color: var(--bottle-fill);
 }
 
 .entry-form[data-type="breast"] .btn-primary {
-  background: var(--breast-accent);
+  background: var(--breast-fill);
   color: var(--breast-on-accent);
-  border-color: var(--breast-accent);
+  border-color: var(--breast-fill);
 }
 
 .entry-form[data-type="pump"] .btn-primary {
-  background: var(--pump-accent);
+  background: var(--pump-fill);
   color: var(--pump-on-accent);
-  border-color: var(--pump-accent);
+  border-color: var(--pump-fill);
 }
 
 .btn-secondary {
