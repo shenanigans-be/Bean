@@ -11,6 +11,7 @@ export function EntryTypeButtons({ active, onSelect }: EntryTypeButtonsProps) {
     <div className="entry-type-row">
       {ENTRY_TYPES.map((type) => {
         const meta = ENTRY_META[type];
+        const Icon = meta.icon;
         return (
           <button
             key={type}
@@ -19,7 +20,7 @@ export function EntryTypeButtons({ active, onSelect }: EntryTypeButtonsProps) {
             className={type === active ? "entry-type-btn entry-type-btn-active" : "entry-type-btn"}
             onClick={() => onSelect(type)}
           >
-            <span className="entry-type-icon">{meta.icon}</span>
+            <Icon className="entry-type-icon" size={28} />
             <span className="entry-type-label">{meta.label}</span>
           </button>
         );

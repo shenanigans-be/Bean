@@ -1,3 +1,4 @@
+import { IconSettings } from "@tabler/icons-react";
 import { useEffect, useState } from "react";
 import { api } from "./api";
 import { ENTRY_META } from "./entryMeta";
@@ -86,6 +87,8 @@ export default function App() {
     setThemeState(next);
   }
 
+  const EditingIcon = editingEntry ? ENTRY_META[editingEntry.type].icon : null;
+
   return (
     <div className="app">
       <header className="app-header">
@@ -96,7 +99,7 @@ export default function App() {
           aria-label="Settings"
           onClick={() => setSettingsOpen(true)}
         >
-          ⚙️
+          <IconSettings size={22} />
         </button>
       </header>
 
@@ -138,8 +141,8 @@ export default function App() {
       {editingEntry && (
         <div className="drawer-overlay" onClick={() => setEditingEntry(null)}>
           <div className="drawer-panel" onClick={(e) => e.stopPropagation()}>
-            <h2>
-              {ENTRY_META[editingEntry.type].icon} Edit {ENTRY_META[editingEntry.type].label}
+            <h2 className="drawer-heading">
+              {EditingIcon && <EditingIcon size={20} />} Edit {ENTRY_META[editingEntry.type].label}
             </h2>
             <EntryForm
               type={editingEntry.type}

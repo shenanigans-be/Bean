@@ -1,7 +1,13 @@
 import { useState, type FormEvent } from "react";
+import { ENTRY_META } from "../entryMeta";
 import type { BottleSource, Defaults, DiaperKind, Side } from "../types";
 import type { Theme } from "../utils/theme";
 import { SegmentedControl } from "./SegmentedControl";
+
+const DiaperIcon = ENTRY_META.diaper.icon;
+const BottleIcon = ENTRY_META.bottle.icon;
+const BreastIcon = ENTRY_META.breast.icon;
+const PumpIcon = ENTRY_META.pump.icon;
 
 interface SettingsPanelProps {
   defaults: Defaults;
@@ -91,7 +97,9 @@ export function SettingsPanel({
           <h3>Default values</h3>
 
           <div className="settings-group" data-type="diaper">
-            <span className="settings-group-label">🧷 Diaper — kind</span>
+            <span className="settings-group-label">
+              <DiaperIcon size={16} /> Diaper — kind
+            </span>
             <SegmentedControl
               options={[
                 { value: "wet", label: "Wet" },
@@ -104,7 +112,9 @@ export function SettingsPanel({
           </div>
 
           <div className="settings-group" data-type="bottle">
-            <span className="settings-group-label">🍼 Bottle — source</span>
+            <span className="settings-group-label">
+              <BottleIcon size={16} /> Bottle — source
+            </span>
             <SegmentedControl
               options={[
                 { value: "formula", label: "Formula" },
@@ -115,7 +125,9 @@ export function SettingsPanel({
             />
           </div>
           <label className="field">
-            <span>🍼 Bottle — volume (ml)</span>
+            <span className="settings-group-label">
+              <BottleIcon size={16} /> Bottle — volume (ml)
+            </span>
             <input
               type="number"
               inputMode="numeric"
@@ -125,7 +137,9 @@ export function SettingsPanel({
           </label>
 
           <div className="settings-group" data-type="breast">
-            <span className="settings-group-label">🤱 Breast — side</span>
+            <span className="settings-group-label">
+              <BreastIcon size={16} /> Breast — side
+            </span>
             <SegmentedControl
               options={[
                 { value: "left", label: "Left" },
@@ -137,7 +151,9 @@ export function SettingsPanel({
             />
           </div>
           <label className="field">
-            <span>🤱 Breast — duration (min)</span>
+            <span className="settings-group-label">
+              <BreastIcon size={16} /> Breast — duration (min)
+            </span>
             <input
               type="number"
               inputMode="numeric"
@@ -147,7 +163,9 @@ export function SettingsPanel({
           </label>
 
           <div className="settings-group" data-type="pump">
-            <span className="settings-group-label">🥛 Pump — side</span>
+            <span className="settings-group-label">
+              <PumpIcon size={16} /> Pump — side
+            </span>
             <SegmentedControl
               options={[
                 { value: "left", label: "Left" },
@@ -159,7 +177,9 @@ export function SettingsPanel({
             />
           </div>
           <label className="field">
-            <span>🥛 Pump — volume (ml)</span>
+            <span className="settings-group-label">
+              <PumpIcon size={16} /> Pump — volume (ml)
+            </span>
             <input
               type="number"
               inputMode="numeric"

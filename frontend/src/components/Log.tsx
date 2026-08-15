@@ -40,20 +40,23 @@ export function Log({ entries, onSelect }: LogProps) {
         <section key={group.dayKey} className="log-day">
           <h2 className="log-day-heading">{formatDayHeading(group.dayKey)}</h2>
           <ul className="log-entries">
-            {group.entries.map((entry) => (
-              <li key={entry.id}>
-                <button
-                  type="button"
-                  className="log-entry"
-                  data-type={entry.type}
-                  onClick={() => onSelect(entry)}
-                >
-                  <span className="log-entry-icon">{ENTRY_META[entry.type].icon}</span>
-                  <span className="log-entry-time">{timeOf(entry.occurredAt)}</span>
-                  <span className="log-entry-summary">{summarizeEntry(entry)}</span>
-                </button>
-              </li>
-            ))}
+            {group.entries.map((entry) => {
+              const Icon = ENTRY_META[entry.type].icon;
+              return (
+                <li key={entry.id}>
+                  <button
+                    type="button"
+                    className="log-entry"
+                    data-type={entry.type}
+                    onClick={() => onSelect(entry)}
+                  >
+                    <Icon className="log-entry-icon" size={20} />
+                    <span className="log-entry-time">{timeOf(entry.occurredAt)}</span>
+                    <span className="log-entry-summary">{summarizeEntry(entry)}</span>
+                  </button>
+                </li>
+              );
+            })}
           </ul>
         </section>
       ))}
