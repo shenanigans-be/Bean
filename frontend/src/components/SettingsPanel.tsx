@@ -88,19 +88,6 @@ export function SettingsPanel({
             />
           </label>
 
-          <div className="settings-group">
-            <span className="settings-group-label">Theme</span>
-            <SegmentedControl
-              options={[
-                { value: "light", label: "Light" },
-                { value: "dark", label: "Dark" },
-                { value: "auto", label: "Auto" },
-              ]}
-              value={theme}
-              onChange={onChangeTheme}
-            />
-          </div>
-
           <h3>Default values</h3>
 
           <div className="settings-group" data-type="diaper">
@@ -180,6 +167,19 @@ export function SettingsPanel({
               onChange={(e) => setPumpVolume(e.target.value)}
             />
           </label>
+
+          <div className="settings-group">
+            <span className="settings-group-label">Theme</span>
+            <SegmentedControl
+              options={[
+                { value: "light", label: "Light" },
+                { value: "dark", label: "Dark" },
+                { value: "auto", label: "Auto" },
+              ]}
+              value={theme}
+              onChange={onChangeTheme}
+            />
+          </div>
 
           {error && <p className="form-error">{error}</p>}
 
