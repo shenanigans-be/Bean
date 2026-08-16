@@ -4,10 +4,11 @@ import { ENTRY_TYPES, isCategoryEnabled, type EnabledCategories, type EntryType 
 
 interface OnboardingProps {
   initialEnabled: EnabledCategories;
+  alreadyInUse: boolean;
   onComplete: (data: { whoAmI: string; enabledCategories: EnabledCategories }) => Promise<void>;
 }
 
-export function Onboarding({ initialEnabled, onComplete }: OnboardingProps) {
+export function Onboarding({ initialEnabled, alreadyInUse, onComplete }: OnboardingProps) {
   const [name, setName] = useState("");
   const [enabled, setEnabled] = useState<EnabledCategories>(initialEnabled);
   const [submitting, setSubmitting] = useState(false);
@@ -34,8 +35,9 @@ export function Onboarding({ initialEnabled, onComplete }: OnboardingProps) {
       <div className="drawer-panel">
         <h2>Welcome to Bean</h2>
         <p className="settings-hint">
-          A couple of quick questions to get set up. You can change any of this later in
-          Settings.
+          {alreadyInUse
+            ? "Looks like someone's already logging entries here. Just tell us who you are — the categories are already set up and shared."
+            : "A couple of quick questions to get set up. You can change any of this later in Settings."}
         </p>
         <form onSubmit={handleSubmit}>
           <label className="field">
@@ -45,31 +47,36 @@ export function Onboarding({ initialEnabled, onComplete }: OnboardingProps) {
               value={name}
               onChange={(e) => setName(e.target.value)}
               placeholder="Your name"
+              autoFocus
             />
           </label>
 
-          <h3>Which categories do you want to track?</h3>
-          <p className="settings-hint">
-            You can also set an optional default value for each field in Settings later.
-          </p>
+          {!alreadyInUse && (
+            <>
+              <h3>Which categories do you want to track?</h3>
+              <p className="settings-hint">
+                You can also set an optional default value for each field in Settings later.
+              </p>
 
-          <div className="onboarding-categories">
-            {ENTRY_TYPES.map((type) => {
-              const meta = ENTRY_META[type];
-              const Icon = meta.icon;
-              return (
-                <label key={type} className="onboarding-category" style={categoryVars(type)}>
-                  <input
-                    type="checkbox"
-                    checked={isCategoryEnabled(enabled, type)}
-                    onChange={() => toggle(type)}
-                  />
-                  <Icon size={18} />
-                  <span>{meta.label}</span>
-                </label>
-              );
-            })}
-          </div>
+              <div className="onboarding-categories">
+                {ENTRY_TYPES.map((type) => {
+                  const meta = ENTRY_META[type];
+                  const Icon = meta.icon;
+                  return (
+                    <label key={type} className="onboarding-category" style={categoryVars(type)}>
+                      <input
+                        type="checkbox"
+                        checked={isCategoryEnabled(enabled, type)}
+                        onChange={() => toggle(type)}
+                      />
+                      <Icon size={18} />
+                      <span>{meta.label}</span>
+                    </label>
+                  );
+                })}
+              </div>
+            </>
+          )}
 
           {error && <p className="form-error">{error}</p>}
 

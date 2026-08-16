@@ -1,4 +1,4 @@
-import { IconFilter } from "@tabler/icons-react";
+import { IconFilter, IconRefresh } from "@tabler/icons-react";
 import { useState } from "react";
 import { categoryVars, ENTRY_META } from "../entryMeta";
 import type { Entry, EntryType } from "../types";
@@ -12,6 +12,8 @@ interface LogProps {
   types: EntryType[];
   recentEntryId: number | null;
   onSelect: (entry: Entry) => void;
+  onRefresh: () => void;
+  refreshing: boolean;
 }
 
 interface DayGroup {
@@ -33,7 +35,7 @@ function groupByDay(entries: Entry[]): DayGroup[] {
   return groups;
 }
 
-export function Log({ entries, types, recentEntryId, onSelect }: LogProps) {
+export function Log({ entries, types, recentEntryId, onSelect, onRefresh, refreshing }: LogProps) {
   const [filterOpen, setFilterOpen] = useState(false);
   const [activeFilter, setActiveFilter] = useState<Set<EntryType>>(new Set());
   const [visibleDays, setVisibleDays] = useState(DAYS_PER_PAGE);
@@ -48,10 +50,6 @@ export function Log({ entries, types, recentEntryId, onSelect }: LogProps) {
     setVisibleDays(DAYS_PER_PAGE);
   }
 
-  if (entries.length === 0) {
-    return <p className="log-empty">No entries yet.</p>;
-  }
-
   const filtered =
     activeFilter.size === 0 ? entries : entries.filter((e) => activeFilter.has(e.type));
   const groups = groupByDay(filtered);
@@ -61,6 +59,15 @@ export function Log({ entries, types, recentEntryId, onSelect }: LogProps) {
   return (
     <div className="log">
       <div className="log-toolbar">
+        <button
+          type="button"
+          className="refresh-btn"
+          aria-label="Refresh"
+          onClick={onRefresh}
+          disabled={refreshing}
+        >
+          <IconRefresh className={refreshing ? "spin" : undefined} size={18} />
+        </button>
         <button
           type="button"
           className={
@@ -95,7 +102,9 @@ export function Log({ entries, types, recentEntryId, onSelect }: LogProps) {
         </div>
       )}
 
-      {visibleGroups.length === 0 ? (
+      {entries.length === 0 ? (
+        <p className="log-empty">No entries yet.</p>
+      ) : visibleGroups.length === 0 ? (
         <p className="log-empty">No entries match this filter.</p>
       ) : (
         visibleGroups.map((group) => (

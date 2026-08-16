@@ -102,11 +102,12 @@ export function SettingsPanel({
               placeholder="Your name"
             />
           </label>
+          <p className="settings-hint">Saved on this device only.</p>
 
           <h3>Categories &amp; default values</h3>
-          <p className="settings-hint">
-            You can show/hide each category and specify an (optional) default value for
-            everything.
+          <p className="settings-hint settings-hint-shared">
+            Shared with everyone using this Bean. You can show/hide each category and
+            specify an (optional) default value for everything.
           </p>
 
           {ENTRY_TYPES.map((type) => {
@@ -308,6 +309,7 @@ export function SettingsPanel({
               value={theme}
               onChange={onChangeTheme}
             />
+            <p className="settings-hint">This device only.</p>
           </div>
 
           {error && <p className="form-error">{error}</p>}

@@ -62,3 +62,7 @@ The frontend runs on `http://localhost:5173` and proxies API calls to the backen
 
 Curious how it's built? See [docs/TECHNICAL.md](docs/TECHNICAL.md) for the stack and
 architecture.
+
+## Credits
+
+App icon: "beans" by Trend Icons from <a href="https://thenounproject.com/browse/icons/term/beans/" target="_blank" title="beans Icons">Noun Project</a> (CC BY 3.0)

@@ -9,6 +9,7 @@ import { Onboarding } from "./components/Onboarding";
 import { SettingsPanel } from "./components/SettingsPanel";
 import { ENTRY_TYPES, isCategoryEnabled, type AppSettings, type EnabledCategories, type Entry, type EntryType, type NewEntry } from "./types";
 import { hasOnboarded, setOnboarded } from "./utils/onboarding";
+import { getLastFetchedAt, setLastFetchedAt, STALE_THRESHOLD_MS } from "./utils/refresh";
 import { getTheme, setTheme as persistTheme, type Theme } from "./utils/theme";
 import { getWhoAmI, setWhoAmI as persistWhoAmI } from "./utils/whoami";
 
@@ -25,19 +26,45 @@ export default function App() {
   const [settingsOpen, setSettingsOpen] = useState(false);
   const [onboarded, setOnboardedState] = useState(hasOnboarded());
   const [loading, setLoading] = useState(true);
+  const [refreshing, setRefreshing] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
+  async function loadData() {
+    const [entriesRes, settingsRes] = await Promise.all([api.getEntries(), api.getSettings()]);
+    setEntries(entriesRes);
+    setSettings({
+      defaults: settingsRes.defaults ?? {},
+      enabledCategories: settingsRes.enabledCategories ?? {},
+    });
+    setLastFetchedAt(Date.now());
+  }
+
   useEffect(() => {
-    Promise.all([api.getEntries(), api.getSettings()])
-      .then(([entriesRes, settingsRes]) => {
-        setEntries(entriesRes);
-        setSettings({
-          defaults: settingsRes.defaults ?? {},
-          enabledCategories: settingsRes.enabledCategories ?? {},
-        });
-      })
+    loadData()
       .catch((err) => setError(err instanceof Error ? err.message : "Failed to load"))
       .finally(() => setLoading(false));
+  }, []);
+
+  async function handleRefresh() {
+    setRefreshing(true);
+    setError(null);
+    try {
+      await loadData();
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Failed to refresh");
+    } finally {
+      setRefreshing(false);
+    }
+  }
+
+  useEffect(() => {
+    function onVisible() {
+      if (document.visibilityState !== "visible") return;
+      if (Date.now() - getLastFetchedAt() < STALE_THRESHOLD_MS) return;
+      handleRefresh();
+    }
+    document.addEventListener("visibilitychange", onVisible);
+    return () => document.removeEventListener("visibilitychange", onVisible);
   }, []);
 
   useEffect(() => {
@@ -48,6 +75,7 @@ export default function App() {
 
   async function refreshEntries() {
     setEntries(await api.getEntries());
+    setLastFetchedAt(Date.now());
   }
 
   async function handleCreate(entry: NewEntry) {
@@ -119,7 +147,14 @@ export default function App() {
   return (
     <div className="app">
       <header className="app-header">
-        <h1>Bean</h1>
+        <div className="app-title">
+          <h1>Bean</h1>
+          {(loading || refreshing) && (
+            <span className="loading-indicator" aria-live="polite">
+              {loading ? "Loading…" : "Updating…"}
+            </span>
+          )}
+        </div>
         <button
           type="button"
           className="settings-btn"
@@ -156,6 +191,8 @@ export default function App() {
           types={visibleTypes}
           recentEntryId={recentEntryId}
           onSelect={setEditingEntry}
+          onRefresh={handleRefresh}
+          refreshing={refreshing}
         />
       )}
 
@@ -174,6 +211,7 @@ export default function App() {
       {!loading && !onboarded && (
         <Onboarding
           initialEnabled={settings.enabledCategories}
+          alreadyInUse={entries.length > 0}
           onComplete={handleCompleteOnboarding}
         />
       )}
