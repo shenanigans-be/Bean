@@ -20,7 +20,7 @@ filters. You can add it as an app to your home screen for easy access.
 
 > [!WARNING]
 >**A note on privacy:** since there's no login. Anyone with the URL can read and write your
-> data. If you host this somewhere private that's fine, but know that when it's publicly available, everyone can read/write. So: Doxx your baby at your own risk (no personal info — except for,  you know, when they pooped — is shown). 
+> data. If you host this somewhere private that's fine, but keep that in mind when it's publicly available. Doxx your baby at your own risk (no personal info — except for,  you know, when they pooped — is shown). 
 
 This app was entirely vibe-coded while taking care of a 3-day old baby, so I can personally guarantee that it is "baby-brain-fog" proof.
 
