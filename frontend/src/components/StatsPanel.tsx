@@ -42,9 +42,7 @@ function InsightCard({ type, insight }: { type: EntryType; insight: CategoryInsi
           <Icon size={16} /> {meta.label}
         </span>
       </div>
-      {isEmpty(insight) ? (
-        <p className="stats-empty">Nothing logged in the last two weeks.</p>
-      ) : insight.kind === "diaper" ? (
+      {insight.kind === "diaper" ? (
         <>
           <StatRow label="Wet" thisWeek={formatRate(insight.wetThisWeek)} lastWeek={formatRate(insight.wetLastWeek)} />
           <StatRow
@@ -79,7 +77,11 @@ function InsightCard({ type, insight }: { type: EntryType; insight: CategoryInsi
 
 export function StatsPanel({ entries, types, onClose }: StatsPanelProps) {
   const insights = useMemo(
-    () => types.map((type) => ({ type, insight: getCategoryInsight(entries, type) })),
+    () =>
+      types
+        .filter((type) => type !== "misc")
+        .map((type) => ({ type, insight: getCategoryInsight(entries, type) }))
+        .filter(({ insight }) => !isEmpty(insight)),
     [entries, types]
   );
 
@@ -97,11 +99,15 @@ export function StatsPanel({ entries, types, onClose }: StatsPanelProps) {
           yet — it's still in progress.
         </p>
 
-        <div className="stats-list">
-          {insights.map(({ type, insight }) => (
-            <InsightCard key={type} type={type} insight={insight} />
-          ))}
-        </div>
+        {insights.length === 0 ? (
+          <p className="stats-empty">Nothing logged in the last two weeks.</p>
+        ) : (
+          <div className="stats-list">
+            {insights.map(({ type, insight }) => (
+              <InsightCard key={type} type={type} insight={insight} />
+            ))}
+          </div>
+        )}
       </div>
     </div>
   );

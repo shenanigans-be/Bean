@@ -127,10 +127,10 @@ export function formatRate(count: number): string {
     const every = Math.round(DAYS_PER_WEEK / count);
     if (every > 1) return `1 every ${every} days`;
   }
-  return `${Number.isInteger(perDay) ? perDay : perDay.toFixed(1)}/day`;
+  return `${Number.isInteger(perDay) ? perDay : perDay.toFixed(1)} / day`;
 }
 
-/** Formats a weekly total as a rounded per-day amount, e.g. "420ml/day". */
+/** Formats a weekly total as a rounded per-day amount, e.g. "420ml / day". */
 export function formatAmountPerDay(total: number, unit: string): string {
-  return `${Math.round(total / DAYS_PER_WEEK)}${unit}/day`;
+  return `${Math.round(total / DAYS_PER_WEEK)}${unit} / day`;
 }
