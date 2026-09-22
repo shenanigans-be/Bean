@@ -1,4 +1,4 @@
-import { IconSettings } from "@tabler/icons-react";
+import { IconChartBar, IconSettings } from "@tabler/icons-react";
 import { useEffect, useState } from "react";
 import { api } from "./api";
 import { ENTRY_META } from "./entryMeta";
@@ -7,6 +7,7 @@ import { EntryTypeButtons } from "./components/EntryTypeButtons";
 import { Log } from "./components/Log";
 import { Onboarding } from "./components/Onboarding";
 import { SettingsPanel } from "./components/SettingsPanel";
+import { StatsPanel } from "./components/StatsPanel";
 import { ENTRY_TYPES, isCategoryEnabled, type AppSettings, type EnabledCategories, type Entry, type EntryType, type NewEntry } from "./types";
 import { hasOnboarded, setOnboarded } from "./utils/onboarding";
 import { getLastFetchedAt, setLastFetchedAt, STALE_THRESHOLD_MS } from "./utils/refresh";
@@ -24,6 +25,7 @@ export default function App() {
   const [whoAmI, setWhoAmIState] = useState(getWhoAmI());
   const [theme, setThemeState] = useState<Theme>(getTheme());
   const [settingsOpen, setSettingsOpen] = useState(false);
+  const [statsOpen, setStatsOpen] = useState(false);
   const [onboarded, setOnboardedState] = useState(hasOnboarded());
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
@@ -155,14 +157,24 @@ export default function App() {
             </span>
           )}
         </div>
-        <button
-          type="button"
-          className="settings-btn"
-          aria-label="Settings"
-          onClick={() => setSettingsOpen(true)}
-        >
-          <IconSettings size={22} />
-        </button>
+        <div className="app-header-actions">
+          <button
+            type="button"
+            className="stats-btn"
+            aria-label="Insights"
+            onClick={() => setStatsOpen(true)}
+          >
+            <IconChartBar size={22} />
+          </button>
+          <button
+            type="button"
+            className="settings-btn"
+            aria-label="Settings"
+            onClick={() => setSettingsOpen(true)}
+          >
+            <IconSettings size={22} />
+          </button>
+        </div>
       </header>
 
       <EntryTypeButtons
@@ -206,6 +218,10 @@ export default function App() {
           onChangeTheme={handleChangeTheme}
           onClose={() => setSettingsOpen(false)}
         />
+      )}
+
+      {statsOpen && (
+        <StatsPanel entries={entries} types={visibleTypes} onClose={() => setStatsOpen(false)} />
       )}
 
       {!loading && !onboarded && (

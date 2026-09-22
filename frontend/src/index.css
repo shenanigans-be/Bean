@@ -234,7 +234,13 @@ body {
   color: var(--text-muted);
 }
 
-.settings-btn {
+.app-header-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+.settings-btn, .stats-btn {
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -691,6 +697,45 @@ body {
   display: flex;
   flex-direction: column;
   gap: 0.6rem;
+}
+
+.stats-category {
+  gap: 0.5rem;
+}
+
+.stats-row {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 0.5rem;
+  font-size: 0.9rem;
+}
+
+.stats-row-label {
+  color: var(--text-muted);
+}
+
+.stats-row-values {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 0.1rem;
+}
+
+.stats-row-value {
+  font-weight: 600;
+  color: var(--text);
+}
+
+.stats-row-compare {
+  color: var(--text-muted);
+  font-size: 0.78rem;
+}
+
+.stats-empty {
+  color: var(--text-muted);
+  font-size: 0.85rem;
+  margin: 0;
 }
 
 .onboarding-categories {
