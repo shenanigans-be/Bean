@@ -2,7 +2,13 @@ import { IconArrowLeft } from "@tabler/icons-react";
 import { useMemo } from "react";
 import { categoryVars, ENTRY_META } from "../entryMeta";
 import type { Entry, EntryType } from "../types";
-import { formatAmountPerDay, formatRate, getCategoryInsight, type CategoryInsight } from "../utils/stats";
+import {
+  formatAmountPerDay,
+  formatRate,
+  getCategoryInsight,
+  hasEnoughHistory,
+  type CategoryInsight,
+} from "../utils/stats";
 
 interface StatsPanelProps {
   entries: Entry[];
@@ -88,6 +94,8 @@ function InsightCard({ type, insight }: { type: EntryType; insight: CategoryInsi
 }
 
 export function StatsPanel({ entries, types, onClose }: StatsPanelProps) {
+  const enoughHistory = useMemo(() => hasEnoughHistory(entries), [entries]);
+
   const insights = useMemo(
     () =>
       types
@@ -106,19 +114,29 @@ export function StatsPanel({ entries, types, onClose }: StatsPanelProps) {
           </button>
           <h2>Insights</h2>
         </div>
-        <p className="settings-hint">
-          The last 7 full days vs. the 7 before that, by category. Today isn't counted
-          yet — it's still in progress.
-        </p>
 
-        {insights.length === 0 ? (
-          <p className="stats-empty">Nothing logged in the last two weeks.</p>
+        {!enoughHistory ? (
+          <p className="stats-empty">
+            Not enough entries yet. Once there is 7 days of data you'll be able to see
+            some stats here.
+          </p>
         ) : (
-          <div className="stats-list">
-            {insights.map(({ type, insight }) => (
-              <InsightCard key={type} type={type} insight={insight} />
-            ))}
-          </div>
+          <>
+            <p className="settings-hint">
+              The last 7 full days vs. the 7 before that, by category. Today isn't
+              counted yet — it's still in progress.
+            </p>
+
+            {insights.length === 0 ? (
+              <p className="stats-empty">Nothing logged in the last two weeks.</p>
+            ) : (
+              <div className="stats-list">
+                {insights.map(({ type, insight }) => (
+                  <InsightCard key={type} type={type} insight={insight} />
+                ))}
+              </div>
+            )}
+          </>
         )}
       </div>
     </div>

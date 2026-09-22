@@ -17,6 +17,17 @@ function weekDayKeys(offsetDays: number): Set<string> {
   return keys;
 }
 
+/** False until the oldest entry (of any category) is at least a full week old. */
+export function hasEnoughHistory(entries: Entry[]): boolean {
+  let oldestTime = Infinity;
+  for (const entry of entries) {
+    const time = parseOccurredAt(entry.occurredAt)?.getTime();
+    if (time !== undefined && time < oldestTime) oldestTime = time;
+  }
+  if (!Number.isFinite(oldestTime)) return false;
+  return Date.now() - oldestTime >= DAYS_PER_WEEK * 24 * 60 * 60 * 1000;
+}
+
 function splitByWeek(entries: Entry[], type: EntryType): { thisWeek: Entry[]; lastWeek: Entry[] } {
   // Today is excluded — it's still in progress, so its partial data would skew the per-day rate.
   const thisWeekKeys = weekDayKeys(1);
