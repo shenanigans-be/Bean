@@ -1,3 +1,4 @@
+import { IconArrowLeft } from "@tabler/icons-react";
 import { useState, type FormEvent, type ReactNode } from "react";
 import { categoryVars, ENTRY_META } from "../entryMeta";
 import { ENTRY_TYPES, isCategoryEnabled, type AppSettings, type Defaults, type EnabledCategories, type EntryType } from "../types";
@@ -89,10 +90,15 @@ export function SettingsPanel({
   }
 
   return (
-    <div className="drawer-overlay" onClick={onClose}>
-      <div className="drawer-panel" onClick={(e) => e.stopPropagation()}>
-        <h2>Settings</h2>
-        <form onSubmit={handleSave}>
+    <div className="fullscreen-panel">
+      <div className="fullscreen-panel-inner">
+        <div className="fullscreen-header">
+          <button type="button" className="back-btn" aria-label="Back" onClick={onClose}>
+            <IconArrowLeft size={22} />
+          </button>
+          <h2>Settings</h2>
+        </div>
+        <form className="settings-form" onSubmit={handleSave}>
           <label className="field">
             <span>Who am I</span>
             <input
@@ -315,9 +321,6 @@ export function SettingsPanel({
           {error && <p className="form-error">{error}</p>}
 
           <div className="form-actions">
-            <button type="button" className="btn-secondary" onClick={onClose}>
-              Cancel
-            </button>
             <button type="submit" className="btn-primary" disabled={saving}>
               {saving ? "Saving…" : "Save"}
             </button>

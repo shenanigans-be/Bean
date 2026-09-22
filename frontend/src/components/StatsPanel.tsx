@@ -1,3 +1,4 @@
+import { IconArrowLeft } from "@tabler/icons-react";
 import { useMemo } from "react";
 import { categoryVars, ENTRY_META } from "../entryMeta";
 import type { Entry, EntryType } from "../types";
@@ -83,19 +84,20 @@ export function StatsPanel({ entries, types, onClose }: StatsPanelProps) {
   );
 
   return (
-    <div className="drawer-overlay" onClick={onClose}>
-      <div className="drawer-panel" onClick={(e) => e.stopPropagation()}>
-        <h2>Insights</h2>
+    <div className="fullscreen-panel">
+      <div className="fullscreen-panel-inner">
+        <div className="fullscreen-header">
+          <button type="button" className="back-btn" aria-label="Back" onClick={onClose}>
+            <IconArrowLeft size={22} />
+          </button>
+          <h2>Insights</h2>
+        </div>
         <p className="settings-hint">This week vs. last week, by category.</p>
 
-        {insights.map(({ type, insight }) => (
-          <InsightCard key={type} type={type} insight={insight} />
-        ))}
-
-        <div className="form-actions">
-          <button type="button" className="btn-secondary" onClick={onClose}>
-            Close
-          </button>
+        <div className="stats-list">
+          {insights.map(({ type, insight }) => (
+            <InsightCard key={type} type={type} insight={insight} />
+          ))}
         </div>
       </div>
     </div>
