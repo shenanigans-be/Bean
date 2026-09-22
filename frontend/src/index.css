@@ -789,6 +789,12 @@ body {
   margin: 0;
 }
 
+.stats-explainer {
+  color: var(--text-muted);
+  font-size: 0.78rem;
+  margin: -0.2rem 0 0;
+}
+
 .onboarding-categories {
   display: flex;
   flex-direction: column;

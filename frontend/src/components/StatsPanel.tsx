@@ -63,12 +63,17 @@ function InsightCard({ type, insight }: { type: EntryType; insight: CategoryInsi
             thisWeek={formatRate(insight.countThisWeek)}
             lastWeek={formatRate(insight.countLastWeek)}
           />
-          {insight.rawCountThisWeek !== undefined && insight.rawCountLastWeek !== undefined && (
-            <StatRow
-              label={insight.rawCountLabel ?? "Entries logged"}
-              thisWeek={formatRate(insight.rawCountThisWeek)}
-              lastWeek={formatRate(insight.rawCountLastWeek)}
-            />
+          {insight.groupedCountThisWeek !== undefined && insight.groupedCountLastWeek !== undefined && (
+            <>
+              <StatRow
+                label={insight.groupedCountLabel ?? "Feeds (grouped)"}
+                thisWeek={formatRate(insight.groupedCountThisWeek)}
+                lastWeek={formatRate(insight.groupedCountLastWeek)}
+              />
+              <p className="stats-explainer">
+                Entries logged less than an hour apart are counted as one feed here.
+              </p>
+            </>
           )}
         </>
       ) : (

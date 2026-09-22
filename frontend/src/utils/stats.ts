@@ -74,10 +74,10 @@ export interface AmountInsight {
   totalThisWeek: number;
   countLastWeek: number;
   totalLastWeek: number;
-  /** The un-aggregated entry count, shown alongside countThisWeek/countLastWeek when those are session counts rather than raw entries. */
-  rawCountLabel?: string;
-  rawCountThisWeek?: number;
-  rawCountLastWeek?: number;
+  /** Session-grouped feed count (bottle only) — see countFeedSessions. */
+  groupedCountLabel?: string;
+  groupedCountThisWeek?: number;
+  groupedCountLastWeek?: number;
 }
 
 export interface CountInsight {
@@ -124,25 +124,22 @@ export function getCategoryInsight(entries: Entry[], type: EntryType): CategoryI
 
   const amountConfig = AMOUNT_CONFIG[type];
   if (amountConfig) {
-    // Bottle feeds are sometimes logged as several entries for one sitting (e.g. the
-    // baby pauses partway through) — count those as a single feed, not several. The
-    // raw (un-aggregated) entry count is still shown alongside it.
-    const isBottle = type === "bottle";
-    const countThisWeek = isBottle ? countFeedSessions(thisWeek) : thisWeek.length;
-    const countLastWeek = isBottle ? countFeedSessions(lastWeek) : lastWeek.length;
     return {
       kind: "amount",
       unit: amountConfig.unit,
       amountLabel: amountConfig.amountLabel,
       countLabel: amountConfig.countLabel,
-      countThisWeek,
+      countThisWeek: thisWeek.length,
       totalThisWeek: thisWeek.reduce((sum, e) => sum + numberField(e, amountConfig.field), 0),
-      countLastWeek,
+      countLastWeek: lastWeek.length,
       totalLastWeek: lastWeek.reduce((sum, e) => sum + numberField(e, amountConfig.field), 0),
-      ...(isBottle && {
-        rawCountLabel: "Entries logged",
-        rawCountThisWeek: thisWeek.length,
-        rawCountLastWeek: lastWeek.length,
+      // Bottle feeds are sometimes logged as several entries for one sitting (e.g. the
+      // baby pauses partway through) — this collapses those into a single feed, shown
+      // alongside the plain entry count above rather than replacing it.
+      ...(type === "bottle" && {
+        groupedCountLabel: "Feeds (grouped)",
+        groupedCountThisWeek: countFeedSessions(thisWeek),
+        groupedCountLastWeek: countFeedSessions(lastWeek),
       }),
     };
   }
