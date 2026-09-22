@@ -92,7 +92,10 @@ export function StatsPanel({ entries, types, onClose }: StatsPanelProps) {
           </button>
           <h2>Insights</h2>
         </div>
-        <p className="settings-hint">This week vs. last week, by category.</p>
+        <p className="settings-hint">
+          The last 7 full days vs. the 7 before that, by category. Today isn't counted
+          yet — it's still in progress.
+        </p>
 
         <div className="stats-list">
           {insights.map(({ type, insight }) => (

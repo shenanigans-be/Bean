@@ -17,8 +17,9 @@ function weekDayKeys(offsetDays: number): Set<string> {
 }
 
 function splitByWeek(entries: Entry[], type: EntryType): { thisWeek: Entry[]; lastWeek: Entry[] } {
-  const thisWeekKeys = weekDayKeys(0);
-  const lastWeekKeys = weekDayKeys(DAYS_PER_WEEK);
+  // Today is excluded — it's still in progress, so its partial data would skew the per-day rate.
+  const thisWeekKeys = weekDayKeys(1);
+  const lastWeekKeys = weekDayKeys(1 + DAYS_PER_WEEK);
   const thisWeek: Entry[] = [];
   const lastWeek: Entry[] = [];
   for (const entry of entries) {
