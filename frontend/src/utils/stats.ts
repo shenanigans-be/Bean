@@ -1,7 +1,8 @@
 import type { Entry, EntryType } from "../types";
-import { dayKeyOf, formatDateTime } from "./datetime";
+import { dayKeyOf, formatDateTime, parseOccurredAt } from "./datetime";
 
 const DAYS_PER_WEEK = 7;
+const FEED_SESSION_GAP_MINUTES = 60;
 
 function dayKeyDaysAgo(n: number): string {
   const d = new Date();
@@ -36,6 +37,26 @@ function numberField(entry: Entry, field: string): number {
   return typeof value === "number" ? value : 0;
 }
 
+/**
+ * Counts bottle feeds as sessions rather than raw entries: consecutive entries less
+ * than an hour apart are treated as one feed logged in multiple parts, not several
+ * separate feeds.
+ */
+function countFeedSessions(entries: Entry[]): number {
+  const times = entries
+    .map((e) => parseOccurredAt(e.occurredAt)?.getTime())
+    .filter((t): t is number => t != null)
+    .sort((a, b) => a - b);
+
+  let sessions = 0;
+  let lastTime: number | null = null;
+  for (const time of times) {
+    if (lastTime === null || time - lastTime > FEED_SESSION_GAP_MINUTES * 60_000) sessions++;
+    lastTime = time;
+  }
+  return sessions;
+}
+
 export interface DiaperInsight {
   kind: "diaper";
   wetThisWeek: number;
@@ -53,6 +74,10 @@ export interface AmountInsight {
   totalThisWeek: number;
   countLastWeek: number;
   totalLastWeek: number;
+  /** The un-aggregated entry count, shown alongside countThisWeek/countLastWeek when those are session counts rather than raw entries. */
+  rawCountLabel?: string;
+  rawCountThisWeek?: number;
+  rawCountLastWeek?: number;
 }
 
 export interface CountInsight {
@@ -99,15 +124,26 @@ export function getCategoryInsight(entries: Entry[], type: EntryType): CategoryI
 
   const amountConfig = AMOUNT_CONFIG[type];
   if (amountConfig) {
+    // Bottle feeds are sometimes logged as several entries for one sitting (e.g. the
+    // baby pauses partway through) — count those as a single feed, not several. The
+    // raw (un-aggregated) entry count is still shown alongside it.
+    const isBottle = type === "bottle";
+    const countThisWeek = isBottle ? countFeedSessions(thisWeek) : thisWeek.length;
+    const countLastWeek = isBottle ? countFeedSessions(lastWeek) : lastWeek.length;
     return {
       kind: "amount",
       unit: amountConfig.unit,
       amountLabel: amountConfig.amountLabel,
       countLabel: amountConfig.countLabel,
-      countThisWeek: thisWeek.length,
+      countThisWeek,
       totalThisWeek: thisWeek.reduce((sum, e) => sum + numberField(e, amountConfig.field), 0),
-      countLastWeek: lastWeek.length,
+      countLastWeek,
       totalLastWeek: lastWeek.reduce((sum, e) => sum + numberField(e, amountConfig.field), 0),
+      ...(isBottle && {
+        rawCountLabel: "Entries logged",
+        rawCountThisWeek: thisWeek.length,
+        rawCountLastWeek: lastWeek.length,
+      }),
     };
   }
 

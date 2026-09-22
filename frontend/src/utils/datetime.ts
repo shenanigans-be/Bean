@@ -65,6 +65,14 @@ export function timeOf(occurredAt: string): string {
   return `${hh}:${min}`;
 }
 
+/** Parses "dd/mm/yyyy - HH:MM" into a Date (local time), or null if malformed. */
+export function parseOccurredAt(occurredAt: string): Date | null {
+  const match = OCCURRED_AT_RE.exec(occurredAt);
+  if (!match) return null;
+  const [, dd, mm, yyyy, hh, min] = match;
+  return new Date(Number(yyyy), Number(mm) - 1, Number(dd), Number(hh), Number(min));
+}
+
 export function formatDayHeading(dayKey: string): string {
   const todayKey = dayKeyOf(formatNow());
   const yesterdayKey = dayKeyOf(formatDateTime(new Date(Date.now() - 86400000)));

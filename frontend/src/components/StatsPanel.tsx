@@ -63,6 +63,13 @@ function InsightCard({ type, insight }: { type: EntryType; insight: CategoryInsi
             thisWeek={formatRate(insight.countThisWeek)}
             lastWeek={formatRate(insight.countLastWeek)}
           />
+          {insight.rawCountThisWeek !== undefined && insight.rawCountLastWeek !== undefined && (
+            <StatRow
+              label={insight.rawCountLabel ?? "Entries logged"}
+              thisWeek={formatRate(insight.rawCountThisWeek)}
+              lastWeek={formatRate(insight.rawCountLastWeek)}
+            />
+          )}
         </>
       ) : (
         <StatRow
