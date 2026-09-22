@@ -1,7 +1,12 @@
 # Bean
 
 A baby tracker for two people, self-hosted, no accounts. Deliberately minimal: "log
-something, see what's been logged" — resist adding graphs/streaks/analytics. See
+something, see what's been logged." One exception exists — a plain-text Insights
+screen comparing this week to last week per category, no charts — added because the
+user asked for that specific thing, not because the door is now open to analytics in
+general. Still resist graphs/streaks/dashboards by default, and **confirm scope with
+the user before building any new feature** rather than implementing it unprompted —
+minimalism here is a deliberate choice, not something to quietly work around. See
 [README.md](README.md) for the product pitch and [docs/TECHNICAL.md](docs/TECHNICAL.md)
 for the stack writeup.
 
